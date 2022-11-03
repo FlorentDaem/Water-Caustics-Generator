@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.5
 
 Lx = 10
-Nx = 300
+Nx = 30
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -228,7 +228,7 @@ def plot_surface(grille_Z, save=False, n=None):
     ax.plot_surface(grille_X, grille_Y, grille_Z, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
     if save:
-        fig.savefig(f"Animation/frame{n}.png")
+        fig.savefig(f"Frames/frame{n}.png")
         plt.close(fig)
 
 
