@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.5
 
 Lx = 10
-Nx = 30
+Nx = 500
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -182,12 +182,9 @@ def motif_to_alpha(motif):
     image = np.zeros((Nx+1, Ny+1, 4))
     for i in range(Nx+1):
         for j in range(Ny+1):
-            val = int(motif[i, j]*255)
-            if val >= 128:
-                alpha = 1
-            else:
-                alpha = 0
-            image[i,j] = [val, val, val, alpha]
+            val = motif[i, j]
+            alpha = val
+            image[i,j] = [val, val, val, val]
     return image
 
     
