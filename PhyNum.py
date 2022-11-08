@@ -183,7 +183,7 @@ def motif_to_alpha(motif):
     for i in range(Nx+1):
         for j in range(Ny+1):
             val = motif[i, j]
-            alpha = val**(1/2)
+            alpha = val
             image[i,j] = [val, val, val, alpha]
     return image
 
