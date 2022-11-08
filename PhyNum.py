@@ -213,7 +213,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
 
 
-def plot_surface(grille_Z, save=False, n=None):
+def plot_surface(surface, save=False, n=None):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.set_xlim(0, Lx)
@@ -222,7 +222,7 @@ def plot_surface(grille_Z, save=False, n=None):
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
-    ax.plot_surface(grille_X, grille_Y, grille_Z, cmap="Blues",
+    ax.plot_surface(grille_X, grille_Y, surface, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
     if save:
         fig.savefig(f"Frames/frame{n}.png")
