@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.5
 
 Lx = 10
-Nx = 1200
+Nx = 30
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -44,7 +44,7 @@ dkx = 1/Nx
 dky = 1/Ny
 
 g = 9.81
-kc = 10
+kc = 1
 
 
 ## Fonctions
