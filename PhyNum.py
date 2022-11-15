@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.5
 
 Lx = 10
-Nx = 30
+Nx = 20
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -32,7 +32,7 @@ Lz = Lx
 
 h = Lx/2  # faire varier la profondeur d'eau va jouer sur les motifs
 A = Lx/100 # Amplitude des vagues
-kx, ky = (10, 10) # Vecteurs d'onde
+kx, ky = (2*np.pi/Lx, 2*np.pi/Ly)  # Vecteurs d'onde
 
 vals_x = np.array([i*dx for i in range(Nx+1)])
 vals_y = np.array([j*dy for j in range(Ny+1)])
@@ -233,8 +233,8 @@ def plot_surface(surface, save=False, n=None):
 
 
 
-frames = 20
-dt = 1/10
+frames = 40
+dt = 1/24
 
 
 
@@ -248,7 +248,7 @@ def omega(kx, ky):
 
 
 
-def surface_simple(u, t, A):
+def surface_simple(u, t, A, B):
     for ix in range(Nx+1):
         for jy in range(Ny+1):
             
@@ -265,13 +265,22 @@ def surface_simple(u, t, A):
                     ky = jky*dky
                     w = omega(kx, ky)
 
-                    sum += A[ikx, jky]*np.exp(1j*(kx*x + ky*y - w*t))
+                    sum += A[ikx, jky]*np.exp(1j*(kx*x + ky*y - w*t)) + B[ikx, jky]*np.exp(1j*(kx*x + ky*y + w*t))
             
-            u[ix, jy] += np.real(sum)/Nx/Ny*100
+            u[ix, jy] += np.real(sum)/Nx/Ny
 
-def genere_animation_simple(u, du0):
-    t = 0
-    A = np.fft.fft2(du0)
+def genere_animation_simple(u, du0, du1):
+
+    Fdu0 = np.fft.fft2(du0)
+    Fdu1 = np.fft.fft2(du1)
+    A = np.zeros((Nx+1, Ny+1), dtype=complex)
+    B = np.zeros((Nx+1, Ny+1), dtype=complex)
+    for ikx in range(0, Nx+1):
+        for jky in range(0, Ny+1):
+            w = omega(kx, ky)
+            A[ikx, jky] = (np.exp(1j*w*dt)*Fdu0[ikx, jky] - Fdu1[ikx, jky])/(2j*np.sin(w*dt))
+            B[ikx, jky] = (-np.exp(-1j*w*dt)*Fdu0[ikx, jky] + Fdu1[ikx, jky])/(2j*np.sin(w*dt))
+    
     for n in tqdm(range(frames)):
         plot_surface(u, save=True, n=n)
-        surface_simple(u, n*dt, A)
+        surface_simple(u, n*dt, A, B)
