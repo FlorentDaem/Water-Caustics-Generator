@@ -200,8 +200,8 @@ def affiche_rayons(trajectoires, surface, save=False):
 
     plt.plot(vals_x, surface[:,0])
 
-    plt.xlim(0-2, Lx+2)
-    plt.ylim(0-2, Lz+2)
+    plt.xlim(0, Lx)
+    plt.ylim(0, Lz)
     if save:
         plt.savefig("rayons.png")
 
