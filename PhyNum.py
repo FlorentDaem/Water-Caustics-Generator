@@ -32,7 +32,7 @@ Lz = Lx
 
 h = Lx/2  # faire varier la profondeur d'eau va jouer sur les motifs
 A = Lx/100 # Amplitude des vagues
-kx, ky = (2*np.pi/Lx, 2*np.pi/Ly)  # Vecteurs d'onde
+Kx, Ky = (2*np.pi/Lx, 2*np.pi/Ly)  # Vecteurs d'onde
 
 vals_x = np.array([i*dx for i in range(Nx+1)])
 vals_y = np.array([j*dy for j in range(Ny+1)])
@@ -233,8 +233,8 @@ def plot_surface(surface, save=False, n=None):
 
 
 
-frames = 40
-dt = 1/24
+frames = 150
+dt = 1/100
 
 
 
@@ -277,6 +277,10 @@ def genere_animation_simple(u, du0, du1):
     B = np.zeros((Nx+1, Ny+1), dtype=complex)
     for ikx in range(0, Nx+1):
         for jky in range(0, Ny+1):
+
+            kx = ikx*dkx+0.001
+            ky = jky*dky+0.001
+
             w = omega(kx, ky)
             A[ikx, jky] = (np.exp(1j*w*dt)*Fdu0[ikx, jky] - Fdu1[ikx, jky])/(2j*np.sin(w*dt))
             B[ikx, jky] = (-np.exp(-1j*w*dt)*Fdu0[ikx, jky] + Fdu1[ikx, jky])/(2j*np.sin(w*dt))
