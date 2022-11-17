@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.5
 
 Lx = 1
-Nx = 500
+Nx = 20
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -31,7 +31,7 @@ dy = Ly/Ny
 
 
 h = 5  # faire varier la profondeur d'eau va jouer sur les motifs
-A = Lx/100 # Amplitude des vagues
+a = 1/450 # Amplitude des vagues
 Kx, Ky = (2*np.pi/Lx, 2*np.pi/Ly)  # Vecteurs d'onde
 
 Lz = 2*h
@@ -42,11 +42,11 @@ vals_y = np.array([j*dy for j in range(Ny+1)])
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
 
-dkx = Lx
-dky = Ly
+dkx = 1/Nx/Lx
+dky = 1/Ny/Ly
 
 g = 9.81
-kc = 1
+kc = 1/10*100
 
 
 ## Fonctions
@@ -224,7 +224,7 @@ def plot_surface(surface, save=False, n=None):
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
-    ax.plot_surface(grille_X, grille_Y, (surface-h)*10 + h, cmap="Blues",
+    ax.plot_surface(grille_X, grille_Y, (surface-h)*100 + h, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
     if save:
         fig.savefig(f"Frames/frame{n}.png")
@@ -235,17 +235,27 @@ def plot_surface(surface, save=False, n=None):
 
 
 
-frames = 100
-dt = 1/30
+frames = 50
+dt = 1/20
 
 
 
 
 
 def omega(kx, ky):
+    # kx *= 2*np.pi
+    # ky *= 2*np.pi
     k = np.sqrt(kx**2 + ky**2)
     return k*g*(1+(k/kc)**2)**(1/2)
 
+
+ome = np.zeros((Nx+1, Ny+1))
+for ikx in range(0, Nx+1):
+    for jky in range(0, Ny+1):
+
+        kx = ikx*dkx
+        ky = jky*dky
+        ome[ikx, jky] = omega(kx, ky)
 
 
 
@@ -264,9 +274,7 @@ def surface_simple(u, t, A, B):
             for ikx in range(0, Nx+1):
                 for jky in range(0, Ny+1):
 
-                    kx = ikx*dkx
-                    ky = jky*dky
-                    w = omega(kx, ky)
+                    w = ome[ikx, jky]
 
                     integrande[ikx, jky] = A[ikx, jky]*np.exp(1j*( - w*t)) + B[ikx, jky]*np.exp(1j*( + w*t))
             
@@ -278,13 +286,12 @@ def genere_animation_simple(u, du0, du1):
     Fdu1 = np.fft.fft2(du1)
     A = np.zeros((Nx+1, Ny+1), dtype=complex)
     B = np.zeros((Nx+1, Ny+1), dtype=complex)
+
     for ikx in range(0, Nx+1):
         for jky in range(0, Ny+1):
 
-            kx = ikx*dkx+0.0001
-            ky = jky*dky+0.0001
+            w = ome[ikx, jky]
 
-            w = omega(kx, ky)
             if w == 0:
                 A[ikx, jky] = 0
                 B[ikx, jky] = 0
