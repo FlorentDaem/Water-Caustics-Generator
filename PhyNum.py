@@ -40,8 +40,8 @@ vals_y = np.array([j*dy for j in range(Ny+1)])
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
 
-dkx = 1/Nx
-dky = 1/Ny
+dkx = Lx
+dky = Ly
 
 g = 9.81
 kc = 1
@@ -233,8 +233,8 @@ def plot_surface(surface, save=False, n=None):
 
 
 
-frames = 150
-dt = 1/100
+frames = 100
+dt = 1/10
 
 
 
@@ -257,17 +257,18 @@ def surface_simple(u, t, A, B):
 
             u[ix, jy] = h
 
-            sum = 0
+            
+            integrande = np.ones((Nx+1, Ny+1), dtype=complex)*h
             for ikx in range(0, Nx+1):
                 for jky in range(0, Ny+1):
 
                     kx = ikx*dkx
                     ky = jky*dky
-                    w = omega(kx, ky)
+                    w = omega(Kx, Ky)
 
-                    sum += A[ikx, jky]*np.exp(1j*(kx*x + ky*y - w*t)) + B[ikx, jky]*np.exp(1j*(kx*x + ky*y + w*t))
+                    integrande[ikx, jky] = A[ikx, jky]*np.exp(1j*( - w*t)) + B[ikx, jky]*np.exp(1j*( + w*t))
             
-            u[ix, jy] += np.real(sum)/Nx/Ny
+            u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
 
 def genere_animation_simple(u, du0, du1):
 
@@ -278,12 +279,16 @@ def genere_animation_simple(u, du0, du1):
     for ikx in range(0, Nx+1):
         for jky in range(0, Ny+1):
 
-            kx = ikx*dkx+0.001
-            ky = jky*dky+0.001
+            kx = ikx*dkx+0.0001
+            ky = jky*dky+0.0001
 
-            w = omega(kx, ky)
-            A[ikx, jky] = (np.exp(1j*w*dt)*Fdu0[ikx, jky] - Fdu1[ikx, jky])/(2j*np.sin(w*dt))
-            B[ikx, jky] = (-np.exp(-1j*w*dt)*Fdu0[ikx, jky] + Fdu1[ikx, jky])/(2j*np.sin(w*dt))
+            w = omega(Kx, Ky)
+            if w == 0:
+                A[ikx, jky] = 0
+                B[ikx, jky] = 0
+            else:
+                A[ikx, jky] = (np.exp(1j*w*dt)*Fdu0[ikx, jky] - Fdu1[ikx, jky])/(2j*np.sin(w*dt))
+                B[ikx, jky] = (-np.exp(-1j*w*dt)*Fdu0[ikx, jky] + Fdu1[ikx, jky])/(2j*np.sin(w*dt))
     
     for n in tqdm(range(frames)):
         plot_surface(u, save=True, n=n)
