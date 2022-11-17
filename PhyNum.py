@@ -20,7 +20,7 @@ import mpl_toolkits.mplot3d.axes3d as p3
 n1 = 1
 n2 = 1.5
 
-Lx = 1
+Lx = 10
 Nx = 20
 dx = Lx/Nx # voir pour avoir un nombre rond
 
@@ -42,11 +42,11 @@ vals_y = np.array([j*dy for j in range(Ny+1)])
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
 
-dkx = 1/Nx/Lx
-dky = 1/Ny/Ly
+dkx = 2*np.pi/Lx
+dky = 2*np.pi/Ly
 
 g = 9.81
-kc = 1/10*100
+kc = 1/10
 
 
 ## Fonctions
@@ -243,8 +243,6 @@ dt = 1/20
 
 
 def omega(kx, ky):
-    # kx *= 2*np.pi
-    # ky *= 2*np.pi
     k = np.sqrt(kx**2 + ky**2)
     return k*g*(1+(k/kc)**2)**(1/2)
 
@@ -263,9 +261,6 @@ for ikx in range(0, Nx+1):
 def surface_simple(u, t, A, B):
     for ix in range(Nx+1):
         for jy in range(Ny+1):
-            
-            x = ix*dx
-            y = jy*dy
 
             u[ix, jy] = h
 
