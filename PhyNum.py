@@ -258,35 +258,15 @@ def omega(kx, ky):
     return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
 
 
-ome = np.zeros((Nx+1, Ny+1))
+OMEGA = np.zeros((Nx+1, Ny+1))
 for ikx in range(0, Nx+1):
     for jky in range(0, Ny+1):
 
         kx = ikx*dkx
         ky = jky*dky
-        ome[ikx, jky] = omega(kx, ky)
+        OMEGA[ikx, jky] = omega(kx, ky)
 
 
-def update_airy(heta, phi):
-    heta_new = np.zeros((Nx+1, Ny+1))
-    phi_new = np.zeros((Nx+1, Ny+1, Nz+1))
-    for i in range(Nx+1):
-        for j in range(Ny+1):
-            k = int(heta[i, j]/dz)
-            heta_new[i, j] = heta[i, j] + dt/dx*(phi[i, j, k+1] - phi[i, j, k])
-            phi_new[i, j, k] = phi[i, j, k] + dt*g*heta[i, j]
-    heta[:,:] = heta_new[:,:]
-    phi[:, :, :] = phi_new[:, :, :]
-
-
-def genere_animation_airy(heta, phi, rayons, save_surface=True, save_motif=False):
-
-    for n in tqdm(range(frames), desc="frame"):
-        if save_surface:
-            plot_surface(heta, save=True, n=n)
-        if save_motif:
-            save_image(heta, rayons, n=n)
-        update_airy(heta, phi)
 
 def surface_simple(u, t, A, B):
     for ix in range(Nx+1):
@@ -299,17 +279,16 @@ def surface_simple(u, t, A, B):
             for ikx in range(0, Nx+1):
                 for jky in range(0, Ny+1):
 
-                    w = ome[ikx, jky]
+                    w = OMEGA[ikx, jky]
 
                     integrande[ikx, jky] = A[ikx, jky]*np.exp(1j*( - w*t)) + B[ikx, jky]*np.exp(1j*( + w*t))
             
             u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
 
 
-def genere_animation_simple(u, du0, du1, rayons, save_surface=True, save_motif=False):
+def genere_animation_simple(u, du0, rayons, save_surface=True, save_motif=False):
 
     Fdu0 = np.fft.fft2(du0)
-    Fdu1 = np.fft.fft2(du1)
     A = np.zeros((Nx+1, Ny+1), dtype=complex)
     B = np.zeros((Nx+1, Ny+1), dtype=complex)
 
