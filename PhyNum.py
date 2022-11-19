@@ -20,8 +20,8 @@ import mpl_toolkits.mplot3d.axes3d as p3
 n1 = 1
 n2 = 1.5
 
-Lx = 10
-Nx = 20
+Lx = 1
+Nx = 100
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -231,11 +231,19 @@ def plot_surface(surface, save=False, n=None):
         plt.close(fig)
 
 
+def save_image(surface, rayons, save=True, n=None):
+    trajectoires = calcul_trajectoires(rayons, surface)
+    motif = calcul_motifs(trajectoires)
+
+    motif = np.sqrt(motif)
+
+    image = motif_to_alpha(motif)
+    plt.imsave(f"Frames/frame {n} image.png", image)
 
 
 
 
-frames = 50
+frames = 3
 dt = 1/20
 
 
@@ -275,7 +283,8 @@ def surface_simple(u, t, A, B):
             
             u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
 
-def genere_animation_simple(u, du0, du1):
+
+def genere_animation_simple(u, du0, du1, rayons, save_surface=True, save_motif=False):
 
     Fdu0 = np.fft.fft2(du0)
     Fdu1 = np.fft.fft2(du1)
@@ -294,6 +303,9 @@ def genere_animation_simple(u, du0, du1):
                 A[ikx, jky] = (np.exp(1j*w*dt)*Fdu0[ikx, jky] - Fdu1[ikx, jky])/(2j*np.sin(w*dt))
                 B[ikx, jky] = (-np.exp(-1j*w*dt)*Fdu0[ikx, jky] + Fdu1[ikx, jky])/(2j*np.sin(w*dt))
     
-    for n in tqdm(range(frames)):
-        plot_surface(u, save=True, n=n)
+    for n in tqdm(range(frames), desc="frame"):
+        if save_surface:
+            plot_surface(u, save=True, n=n)
+        if save_motif:
+            save_image(u, rayons, n=n)
         surface_simple(u, n*dt, A, B)
