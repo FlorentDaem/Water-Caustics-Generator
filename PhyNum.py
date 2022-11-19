@@ -20,8 +20,8 @@ import mpl_toolkits.mplot3d.axes3d as p3
 n1 = 1
 n2 = 1.5
 
-Lx = 1
-Nx = 100
+Lx = 10
+Nx = 10
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -31,19 +31,22 @@ dy = Ly/Ny
 
 
 h = 5  # faire varier la profondeur d'eau va jouer sur les motifs
-a = 1/450 # Amplitude des vagues
-Kx, Ky = (2*np.pi/Lx, 2*np.pi/Ly)  # Vecteurs d'onde
+a = 1/45 # Amplitude des vagues
+Kx, Ky = (np.pi/Lx, np.pi/Ly)  # Vecteurs d'onde
 
 Lz = 2*h
+Nz = 100
+dz = Lz/Nz
 
 vals_x = np.array([i*dx for i in range(Nx+1)])
 vals_y = np.array([j*dy for j in range(Ny+1)])
+vals_z = np.array([k*dz for k in range(Nz+1)])
 
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
 
-dkx = 2*np.pi/Lx
-dky = 2*np.pi/Ly
+dkx = 2*np.pi/Lx/dx
+dky = dkx
 
 g = 9.81
 kc = 1/10
@@ -243,8 +246,8 @@ def save_image(surface, rayons, save=True, n=None):
 
 
 
-frames = 3
-dt = 1/20
+frames = 100
+dt = 1e-3
 
 
 
@@ -264,7 +267,26 @@ for ikx in range(0, Nx+1):
         ome[ikx, jky] = omega(kx, ky)
 
 
+def update_airy(heta, phi):
+    heta_new = np.zeros((Nx+1, Ny+1))
+    phi_new = np.zeros((Nx+1, Ny+1, Nz+1))
+    for i in range(Nx+1):
+        for j in range(Ny+1):
+            k = int(heta[i, j]/dz)
+            heta_new[i, j] = heta[i, j] + dt/dx*(phi[i, j, k+1] - phi[i, j, k])
+            phi_new[i, j, k] = phi[i, j, k] + dt*g*heta[i, j]
+    heta[:,:] = heta_new[:,:]
+    phi[:, :, :] = phi_new[:, :, :]
 
+
+def genere_animation_airy(heta, phi, rayons, save_surface=True, save_motif=False):
+
+    for n in tqdm(range(frames), desc="frame"):
+        if save_surface:
+            plot_surface(heta, save=True, n=n)
+        if save_motif:
+            save_image(heta, rayons, n=n)
+        update_airy(heta, phi)
 
 def surface_simple(u, t, A, B):
     for ix in range(Nx+1):
@@ -280,6 +302,7 @@ def surface_simple(u, t, A, B):
                     w = ome[ikx, jky]
 
                     integrande[ikx, jky] = A[ikx, jky]*np.exp(1j*( - w*t)) + B[ikx, jky]*np.exp(1j*( + w*t))
+                    # integrande[ikx, jky] *= np.exp(1j*( - w*t))
             
             u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
 
@@ -297,11 +320,14 @@ def genere_animation_simple(u, du0, du1, rayons, save_surface=True, save_motif=F
             w = ome[ikx, jky]
 
             if w == 0:
-                A[ikx, jky] = 0
-                B[ikx, jky] = 0
+                # A[ikx, jky] = 0
+                # B[ikx, jky] = 0
+                w = 0.0001
             else:
-                A[ikx, jky] = (np.exp(1j*w*dt)*Fdu0[ikx, jky] - Fdu1[ikx, jky])/(2j*np.sin(w*dt))
-                B[ikx, jky] = (-np.exp(-1j*w*dt)*Fdu0[ikx, jky] + Fdu1[ikx, jky])/(2j*np.sin(w*dt))
+                # A[ikx, jky] = (np.exp(1j*w*dt)*Fdu0[ikx, jky] - Fdu1[ikx, jky])/(2j*np.sin(w*dt))
+                # B[ikx, jky] = (-np.exp(-1j*w*dt)*Fdu0[ikx, jky] + Fdu1[ikx, jky])/(2j*np.sin(w*dt))
+                A[ikx, jky] = Fdu0[ikx, jky]
+                B[ikx, jky] = np.conjugate(Fdu0[-ikx, -jky])
     
     for n in tqdm(range(frames), desc="frame"):
         if save_surface:
