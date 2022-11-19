@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.5
 
 Lx = 10
-Nx = 20
+Nx = 40
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -49,7 +49,7 @@ dkx = 2*np.pi/Lx/dx
 dky = dkx
 
 g = 9.81
-kc = 10000
+kc = 500
 
 
 ## Fonctions
@@ -218,7 +218,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
 
 
-def plot_surface(surface, save=False, n=None):
+def plot_surface(surface, save=False, n=None, fact=10):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.set_xlim(0, Lx)
@@ -227,7 +227,7 @@ def plot_surface(surface, save=False, n=None):
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
-    ax.plot_surface(grille_X, grille_Y, (surface-h)*100 + h, cmap="Blues",
+    ax.plot_surface(grille_X, grille_Y, (surface-h)*fact + h, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
     if save:
         fig.savefig(f"Frames/frame{n}.png")
@@ -246,7 +246,7 @@ def save_image(surface, rayons, save=True, n=None):
 
 
 
-frames = 50
+frames = 20
 dt = 1/20
 
 
@@ -255,8 +255,7 @@ dt = 1/20
 
 def omega(kx, ky):
     k = np.sqrt(kx**2 + ky**2)
-    return (k*g*(1+(k/kc)**2))**(1/2)
-    # return np.sqrt(k*g)
+    return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
 
 
 ome = np.zeros((Nx+1, Ny+1))
@@ -303,7 +302,6 @@ def surface_simple(u, t, A, B):
                     w = ome[ikx, jky]
 
                     integrande[ikx, jky] = A[ikx, jky]*np.exp(1j*( - w*t)) + B[ikx, jky]*np.exp(1j*( + w*t))
-                    # integrande[ikx, jky] *= np.exp(1j*( - w*t))
             
             u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
 
