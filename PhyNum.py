@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.5
 
 Lx = 10
-Nx = 10
+Nx = 20
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -49,7 +49,7 @@ dkx = 2*np.pi/Lx/dx
 dky = dkx
 
 g = 9.81
-kc = 1/10
+kc = 10000
 
 
 ## Fonctions
@@ -246,8 +246,8 @@ def save_image(surface, rayons, save=True, n=None):
 
 
 
-frames = 100
-dt = 1e-3
+frames = 50
+dt = 1/20
 
 
 
@@ -255,7 +255,8 @@ dt = 1e-3
 
 def omega(kx, ky):
     k = np.sqrt(kx**2 + ky**2)
-    return k*g*(1+(k/kc)**2)**(1/2)
+    return (k*g*(1+(k/kc)**2))**(1/2)
+    # return np.sqrt(k*g)
 
 
 ome = np.zeros((Nx+1, Ny+1))
@@ -317,17 +318,8 @@ def genere_animation_simple(u, du0, du1, rayons, save_surface=True, save_motif=F
     for ikx in range(0, Nx+1):
         for jky in range(0, Ny+1):
 
-            w = ome[ikx, jky]
-
-            if w == 0:
-                # A[ikx, jky] = 0
-                # B[ikx, jky] = 0
-                w = 0.0001
-            else:
-                # A[ikx, jky] = (np.exp(1j*w*dt)*Fdu0[ikx, jky] - Fdu1[ikx, jky])/(2j*np.sin(w*dt))
-                # B[ikx, jky] = (-np.exp(-1j*w*dt)*Fdu0[ikx, jky] + Fdu1[ikx, jky])/(2j*np.sin(w*dt))
-                A[ikx, jky] = Fdu0[ikx, jky]
-                B[ikx, jky] = np.conjugate(Fdu0[-ikx, -jky])
+            A[ikx, jky] = Fdu0[ikx, jky]
+            B[ikx, jky] = np.conjugate(Fdu0[-ikx, -jky])
     
     for n in tqdm(range(frames), desc="frame"):
         if save_surface:
