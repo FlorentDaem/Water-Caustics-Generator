@@ -317,17 +317,16 @@ def surface_simple(u, t, A, B):
             u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
 
 
-def genere_animation_simple(u, du0, rayons, save_surface=True, save_motif=False):
+def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
 
-    Fdu0 = np.fft.fft2(du0)
     A = np.zeros((Nx+1, Ny+1), dtype=complex)
     B = np.zeros((Nx+1, Ny+1), dtype=complex)
 
     for ikx in range(0, Nx+1):
         for jky in range(0, Ny+1):
 
-            A[ikx, jky] = Fdu0[ikx, jky]
-            B[ikx, jky] = np.conjugate(Fdu0[-ikx, -jky])
+            A[ikx, jky] = h0[ikx, jky]
+            B[ikx, jky] = np.conjugate(h0[-ikx, -jky])
     
     for n in tqdm(range(frames), desc="frame"):
         if save_surface:
