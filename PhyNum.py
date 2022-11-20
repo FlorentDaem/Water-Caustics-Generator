@@ -18,10 +18,10 @@ import mpl_toolkits.mplot3d.axes3d as p3
 ## Constantes
 
 n1 = 1
-n2 = 1.5
+n2 = 1.3
 
-Lx = 3
-Nx = 40
+Lx = 4
+Nx = 400
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -173,10 +173,10 @@ def calcul_motifs(trajectoires):
         L, I, S = trajectoire
         i_S, j_S = indices_du_point(S)
 
-        if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
-            motif[i_S, j_S] += 1
+        # if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
+        #     motif[i_S, j_S] += 1
 
-        # motif[i_S%Nx, j_S%Ny] += 1
+        motif[i_S%Nx, j_S%Ny] += 1
 
     max_I = motif.max()
     # règle l'intensité de la lumière en fonction du nombre d'impacts de rayons
@@ -214,7 +214,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
 
 
-def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=1, l=0):
+def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=10**15, l=0):
     "Calcule le spectre de vagues de Phillips."
 
     k = np.array([kx, ky])
