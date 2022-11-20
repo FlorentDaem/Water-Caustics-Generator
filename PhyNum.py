@@ -20,7 +20,7 @@ import mpl_toolkits.mplot3d.axes3d as p3
 n1 = 1
 n2 = 1.5
 
-Lx = 10
+Lx = 3
 Nx = 40
 dx = Lx/Nx # voir pour avoir un nombre rond
 
@@ -30,11 +30,11 @@ dy = Ly/Ny
 
 
 
-h = 5  # faire varier la profondeur d'eau va jouer sur les motifs
-a = 1/45 # Amplitude des vagues
+h = 3  # faire varier la profondeur d'eau va jouer sur les motifs
+a = 0.1*10 # Amplitude des vagues
 Kx, Ky = (np.pi/Lx, np.pi/Ly)  # Vecteurs d'onde
 
-Lz = 2*h
+Lz = Lx
 Nz = 100
 dz = Lz/Nz
 
@@ -173,10 +173,10 @@ def calcul_motifs(trajectoires):
         L, I, S = trajectoire
         i_S, j_S = indices_du_point(S)
 
-        # if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
-        #     motif[i_S, j_S] += 1
+        if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
+            motif[i_S, j_S] += 1
 
-        motif[i_S%Nx, j_S%Ny] += 1
+        # motif[i_S%Nx, j_S%Ny] += 1
 
     max_I = motif.max()
     # règle l'intensité de la lumière en fonction du nombre d'impacts de rayons
@@ -218,7 +218,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
 
 
-def plot_surface(surface, save=False, n=None, fact=10):
+def plot_surface(surface, save=False, n=None, fact=1):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.set_xlim(0, Lx)
