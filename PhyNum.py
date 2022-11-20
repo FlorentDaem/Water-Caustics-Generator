@@ -214,6 +214,37 @@ def affiche_rayons(trajectoires, surface, save=False):
 
 
 
+def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=1, l=0):
+    "Calcule le spectre de vagues de Phillips."
+
+    k = np.array([kx, ky])
+    V_norm = np.linalg.norm(V)
+    k_norm = np.linalg.norm(k)
+
+    if V_norm*k_norm == 0:
+        return 0
+    else:
+
+        k_unit = 1/k_norm*k
+        V_unit = 1/V_norm*V
+
+        cos_facteur = np.dot(k_unit, V_unit)
+
+        L = V_norm**2/g
+
+        correction = np.exp(-k_norm**2 * l**2)
+
+        return A*np.exp(-1/(L*k_norm)**2)/k_norm**4 * cos_facteur**2 * correction
+
+
+def random_h0(kx, ky, Ph):
+    "Calcule une surface initiale aléatoire de vagues dans le domaine de Fourier."
+    e_r = rd.gauss(0, 1)
+    e_i = rd.gauss(0, 1)
+    return 1/np.sqrt(2) * (e_r + 1j*e_i) * np.sqrt(Ph(kx, ky))
+
+
+
 
 
 
