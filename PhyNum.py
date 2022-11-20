@@ -73,12 +73,12 @@ def reflect(v, n):
 def cos_theta_refract(cos_theta1):
     return np.sqrt(1-(n1/n2)**2 * (1-cos_theta1**2))
 
-def refract(v, n):
+def refract(ri, n):
     '''Renvoie la direction du rayon réfracté'''
-    cos_theta1 = -np.dot(v, n)
-    r = n1/n2*v + (n1/n2*cos_theta1- cos_theta_refract(cos_theta1))*n
-    r = 1/np.linalg.norm(r)*r
-    return r
+    cos_theta1 = -np.dot(ri, n)
+    rr = n1/n2*ri + (n1/n2*cos_theta1- cos_theta_refract(cos_theta1))*n
+    rr = 1/np.linalg.norm(rr)*rr
+    return rr
 
 def vecteurs_de_surface(surface):
     '''Renvoie les vecteurs normaux à la surface surface.'''
