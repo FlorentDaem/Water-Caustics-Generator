@@ -38,8 +38,8 @@ Lz = Lx
 Nz = 100
 dz = Lz/Nz
 
-vals_x = np.array([i*dx for i in range(Nx+1)])
-vals_y = np.array([j*dy for j in range(Ny+1)])
+vals_x = np.array([i*dx for i in range(Nx)])
+vals_y = np.array([j*dy for j in range(Ny)])
 vals_z = np.array([k*dz for k in range(Nz+1)])
 
 # Définition d'un meshgrid
@@ -83,9 +83,9 @@ def refract(ri, n):
 def vecteurs_de_surface(surface):
     '''Renvoie les vecteurs normaux à la surface surface.'''
     vecteurs_normaux =[]
-    for i in range(Nx+1-1):
+    for i in range(Nx-1):
         vecteurs_normaux.append([])
-        for j in range(Ny+1-1):
+        for j in range(Ny-1):
             A = np.array([i*dx, j*dy, surface[i, j]])
             B = np.array([(i+1)*dx, j*dy, surface[i+1, j]])
             AB = vec(A, B)
@@ -146,8 +146,8 @@ def calcul_trajectoires(rayons, surface):
     où L est le point de départ, I l'intersection avec l'eau, S l'intersection avec le sol.'''
     trajectoires = []
     vecteurs_normaux = vecteurs_de_surface(surface)
-    for i in tqdm(range(Nx+1-1), desc="Calcul des trajectoires "):
-        for j in range(Ny+1-1):
+    for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
+        for j in range(Ny-1):
             rayon = rayons[i][j]
             L, u = rayon
             I = find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='surface')
@@ -167,7 +167,7 @@ def calcul_trajectoires(rayons, surface):
 
 
 def calcul_motifs(trajectoires):
-    motif = np.zeros((Nx+1, Ny+1))
+    motif = np.zeros((Nx, Ny))
 
     for trajectoire in trajectoires:
         L, I, S = trajectoire
@@ -184,9 +184,9 @@ def calcul_motifs(trajectoires):
     return motif
 
 def motif_to_alpha(motif):
-    image = np.zeros((Nx+1, Ny+1, 4))
-    for i in range(Nx+1):
-        for j in range(Ny+1):
+    image = np.zeros((Nx, Ny, 4))
+    for i in range(Nx):
+        for j in range(Ny):
             val = motif[i, j]
             alpha = val
             image[i,j] = [val, val, val, alpha]
@@ -277,7 +277,7 @@ def save_image(surface, rayons, save=True, n=None):
 
 
 
-frames = 100
+frames = 50
 dt = 1/10
 
 
@@ -289,9 +289,9 @@ def omega(kx, ky):
     return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
 
 
-OMEGA = np.zeros((Nx+1, Ny+1))
-for ikx, freqx in enumerate(np.fft.fftfreq(Nx+1)):
-    for jky, freqy in enumerate(np.fft.fftfreq(Ny+1)):
+OMEGA = np.zeros((Nx, Ny))
+for ikx, freqx in enumerate(np.fft.fftfreq(Nx)):
+    for jky, freqy in enumerate(np.fft.fftfreq(Ny)):
 
         kx = freqx*dkx
         ky = freqy*dky
@@ -302,15 +302,15 @@ for ikx, freqx in enumerate(np.fft.fftfreq(Nx+1)):
 
 
 def surface_simple(u, t, A, B):
-    for ix in range(Nx+1):
-        for jy in range(Ny+1):
+    for ix in range(Nx):
+        for jy in range(Ny):
 
             u[ix, jy] = h
 
             
-            integrande = np.ones((Nx+1, Ny+1), dtype=complex)*h
-            for ikx in range(0, Nx+1):
-                for jky in range(0, Ny+1):
+            integrande = np.ones((Nx, Ny), dtype=complex)*h
+            for ikx in range(0, Nx):
+                for jky in range(0, Ny):
 
                     w = OMEGA[ikx, jky]
 
@@ -321,11 +321,11 @@ def surface_simple(u, t, A, B):
 
 def genere_animation_simple(u, A, B, rayons, save_surface=True, save_motif=False):
 
-    # A = np.zeros((Nx+1, Ny+1), dtype=complex)
-    # B = np.zeros((Nx+1, Ny+1), dtype=complex)
+    # A = np.zeros((Nx, Ny), dtype=complex)
+    # B = np.zeros((Nx, Ny), dtype=complex)
 
-    # for ikx in range(0, Nx+1):
-    #     for jky in range(0, Ny+1):
+    # for ikx in range(0, Nx):
+    #     for jky in range(0, Ny):
 
     #         A[ikx, jky] = h0[ikx, jky]
     #         B[ikx, jky] = np.conjugate(h0[-ikx, -jky])
