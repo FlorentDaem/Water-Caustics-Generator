@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.3
 
 Lx = 4
-Nx = 300
+Nx = 20
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -45,7 +45,7 @@ vals_z = np.array([k*dz for k in range(Nz+1)])
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
 
-dkx = 2*np.pi/Lx/dx
+dkx = 2*np.pi/Lx
 dky = dkx
 
 g = 9.81
@@ -277,7 +277,7 @@ def save_image(surface, rayons, save=True, n=None):
 
 
 
-frames = 20
+frames = 30
 dt = 1/20
 
 
@@ -296,6 +296,8 @@ for ikx in range(0, Nx+1):
         kx = ikx*dkx
         ky = jky*dky
         OMEGA[ikx, jky] = omega(kx, ky)
+        if OMEGA[ikx, jky] == 0:
+            OMEGA[ikx, jky] = 1e-8
 
 
 
