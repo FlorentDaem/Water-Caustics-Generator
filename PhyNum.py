@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.3
 
 Lx = 4
-Nx = 20
+Nx = 30
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -277,8 +277,8 @@ def save_image(surface, rayons, save=True, n=None):
 
 
 
-frames = 30
-dt = 1/20
+frames = 100
+dt = 1/10
 
 
 
@@ -290,14 +290,14 @@ def omega(kx, ky):
 
 
 OMEGA = np.zeros((Nx+1, Ny+1))
-for ikx in range(0, Nx+1):
-    for jky in range(0, Ny+1):
+for ikx, freqx in enumerate(np.fft.fftfreq(Nx+1)):
+    for jky, freqy in enumerate(np.fft.fftfreq(Ny+1)):
 
-        kx = ikx*dkx
-        ky = jky*dky
+        kx = freqx*dkx
+        ky = freqy*dky
         OMEGA[ikx, jky] = omega(kx, ky)
         if OMEGA[ikx, jky] == 0:
-            OMEGA[ikx, jky] = 1e-8
+            OMEGA[ikx, jky] = 1e-5
 
 
 
@@ -319,16 +319,16 @@ def surface_simple(u, t, A, B):
             u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
 
 
-def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
+def genere_animation_simple(u, A, B, rayons, save_surface=True, save_motif=False):
 
-    A = np.zeros((Nx+1, Ny+1), dtype=complex)
-    B = np.zeros((Nx+1, Ny+1), dtype=complex)
+    # A = np.zeros((Nx+1, Ny+1), dtype=complex)
+    # B = np.zeros((Nx+1, Ny+1), dtype=complex)
 
-    for ikx in range(0, Nx+1):
-        for jky in range(0, Ny+1):
+    # for ikx in range(0, Nx+1):
+    #     for jky in range(0, Ny+1):
 
-            A[ikx, jky] = h0[ikx, jky]
-            B[ikx, jky] = np.conjugate(h0[-ikx, -jky])
+    #         A[ikx, jky] = h0[ikx, jky]
+    #         B[ikx, jky] = np.conjugate(h0[-ikx, -jky])
     
     for n in tqdm(range(frames), desc="frame"):
         if save_surface:
