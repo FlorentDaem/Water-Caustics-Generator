@@ -36,8 +36,8 @@ Kx, Ky = (np.pi/Lx, np.pi/Ly)  # Vecteurs d'onde
 
 Lz = Lx
 
-vals_x = np.array([i*dx for i in range(Nx)])
-vals_y = np.array([j*dy for j in range(Ny)])
+vals_x = np.array([(i-Nx/2)*dx for i in range(Nx)])
+vals_y = np.array([(j-Ny/2)*dy for j in range(Ny)])
 
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
@@ -83,10 +83,10 @@ def vecteurs_de_surface(surface):
     for i in range(Nx-1):
         vecteurs_normaux.append([])
         for j in range(Ny-1):
-            A = np.array([i*dx, j*dy, surface[i, j]])
-            B = np.array([(i+1)*dx, j*dy, surface[i+1, j]])
+            A = np.array([(i-Nx/2)*dx, (j-Ny/2)*dy, surface[i, j]])
+            B = np.array([((i-Nx/2)+1)*dx, (j-Ny/2)*dy, surface[i+1, j]])
             AB = vec(A, B)
-            C = np.array([i*dx, (j+1)*dy, surface[i, j+1]])
+            C = np.array([(i-Nx/2)*dx, ((j-Ny/2)+1)*dy, surface[i, j+1]])
             AC = vec(A, C)
 
             n = np.cross(AB, AC)
@@ -103,8 +103,8 @@ def point_rayon(rayon, s):
 
 def indices_du_point(P):
     '''Renvoie les indices du pixel qui correspond au point P'''
-    i = int(np.dot(P, np.array([1, 0, 0]))/dx)
-    j = int(np.dot(P, np.array([0, 1, 0]))/dy)
+    i = int(np.dot(P, np.array([1, 0, 0]))/dx+Nx/2)
+    j = int(np.dot(P, np.array([0, 1, 0]))/dy+Ny/2)
     return (i, j)
 
 
@@ -122,7 +122,7 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, intersection='sol'):
         n = np.array([0, 0, 1])
     
     elif intersection == 'surface':
-        P = np.array([i*dx, j*dx, surface[i%Nx, j%Ny]])
+        P = np.array([(i-Nx/2)*dx, (j-Ny/2)*dx, surface[i%Nx, j%Ny]])
         n = vecteurs_normaux[i%Nx, j%Ny]
     
     return np.dot(n, I-P)
@@ -202,7 +202,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
     plt.plot(vals_x, surface[:,0])
 
-    plt.xlim(0, Lx)
+    plt.xlim(-Lx/2, Lx/2)
     plt.ylim(0, Lz)
     if save:
         plt.savefig("rayons.png")
@@ -249,8 +249,8 @@ def random_h0(kx, ky, Ph, V):
 def plot_surface(surface, save=False, n=None, fact=1):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlim(0, Lx)
-    ax.set_ylim(0, Ly)
+    ax.set_xlim(-Lx/2, Lx/2)
+    ax.set_ylim(-Ly/2, Ly/2)
     ax.set_zlim(0, Lz)
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
@@ -290,8 +290,8 @@ OMEGA = np.zeros((Nx, Ny))
 for i in range(Nx):
     for j in range(Ny):
 
-        kx = i*dkx
-        ky = j*dky
+        kx = (i-Nx/2)*dkx
+        ky = (j-Ny/2)*dky
         OMEGA[i, j] = omega(kx, ky)
         if OMEGA[i, j] == 0:
             OMEGA[i, j] = 1e-5
