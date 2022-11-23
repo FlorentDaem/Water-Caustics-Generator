@@ -35,18 +35,15 @@ a = 0.1*10 # Amplitude des vagues
 Kx, Ky = (np.pi/Lx, np.pi/Ly)  # Vecteurs d'onde
 
 Lz = Lx
-Nz = 100
-dz = Lz/Nz
 
 vals_x = np.array([i*dx for i in range(Nx)])
 vals_y = np.array([j*dy for j in range(Ny)])
-vals_z = np.array([k*dz for k in range(Nz+1)])
 
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
 
 dkx = 2*np.pi/Lx
-dky = dkx
+dky = 2*np.pi/Ly
 
 g = 9.81
 kc = 500
@@ -290,29 +287,29 @@ def omega(kx, ky):
 
 
 OMEGA = np.zeros((Nx, Ny))
-for ikx, freqx in enumerate(np.fft.fftfreq(Nx)):
-    for jky, freqy in enumerate(np.fft.fftfreq(Ny)):
+for i in range(Nx):
+    for j in range(Ny):
 
-        kx = freqx*dkx
-        ky = freqy*dky
-        OMEGA[ikx, jky] = omega(kx, ky)
-        if OMEGA[ikx, jky] == 0:
-            OMEGA[ikx, jky] = 1e-5
+        kx = i*dkx
+        ky = j*dky
+        OMEGA[i, j] = omega(kx, ky)
+        if OMEGA[i, j] == 0:
+            OMEGA[i, j] = 1e-5
 
 
 
 def surface_simple(u, t, A, B):
-    for ix in range(Nx):
-        for jy in range(Ny):
+    for i in range(Nx):
+        for j in range(Ny):
 
-            u[ix, jy] = h
+            u[i, j] = h
 
             
             integrande = np.ones((Nx, Ny), dtype=complex)*h
 
             integrande[:, :] = A[:, :]*np.exp(1j*( - OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*( + OMEGA[:, :]*t))
             
-            u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
+            u[i, j] += np.real(np.fft.ifft2(integrande)[i, j])
 
 
 def genere_animation_simple(u, A, B, rayons, save_surface=True, save_motif=False):
@@ -320,11 +317,11 @@ def genere_animation_simple(u, A, B, rayons, save_surface=True, save_motif=False
     # A = np.zeros((Nx, Ny), dtype=complex)
     # B = np.zeros((Nx, Ny), dtype=complex)
 
-    # for ikx in range(0, Nx):
-    #     for jky in range(0, Ny):
+    # for i in range(0, Nx):
+    #     for j in range(0, Ny):
 
-    #         A[ikx, jky] = h0[ikx, jky]
-    #         B[ikx, jky] = np.conjugate(h0[-ikx, -jky])
+    #         A[i, j] = h0[i, j]
+    #         B[i, j] = np.conjugate(h0[-i, -j])
     
     for n in tqdm(range(frames), desc="frame"):
         if save_surface:
