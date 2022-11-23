@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.3
 
 Lx = 4
-Nx = 30
+Nx = 2**5
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -309,12 +309,8 @@ def surface_simple(u, t, A, B):
 
             
             integrande = np.ones((Nx, Ny), dtype=complex)*h
-            for ikx in range(0, Nx):
-                for jky in range(0, Ny):
 
-                    w = OMEGA[ikx, jky]
-
-                    integrande[ikx, jky] = A[ikx, jky]*np.exp(1j*( - w*t)) + B[ikx, jky]*np.exp(1j*( + w*t))
+            integrande[:, :] = A[:, :]*np.exp(1j*( - OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*( + OMEGA[:, :]*t))
             
             u[ix, jy] += np.real(np.fft.ifft2(integrande)[ix, jy])
 
