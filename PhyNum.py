@@ -54,6 +54,11 @@ for i in range(Nx):
 g = 9.81
 kc = 500
 
+fact_1 = np.ones((Nx, Ny))
+for i in range(Nx):
+    for j in range(Ny):
+        fact_1[i,j] = (-1)**(i+j)
+
 
 ## Fonctions
 
@@ -144,10 +149,11 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
     return I
 
 
-def calcul_trajectoires(rayons, surface):
+def calcul_trajectoires(rayons, surface, A, B, t):
     '''Renvoie les trajectoires de chaque rayon. C'est à dire l'ensemble de trois points (L, I, S),
     où L est le point de départ, I l'intersection avec l'eau, S l'intersection avec le sol.'''
     trajectoires = []
+    # vecteurs_normaux = vecteurs_normaux_avec_fourier(A, B, t)
     vecteurs_normaux = vecteurs_de_surface(surface)
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
         for j in range(Ny-1):
@@ -155,9 +161,8 @@ def calcul_trajectoires(rayons, surface):
             L, u = rayon
             I = find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='surface')
 
-            '''TODO : Faire en sorte de calculer chaque n dans find_point_intersection. Renvoyer I ET n.'''
             i, j = indices_du_point(I)
-            n = vecteurs_normaux[i%Nx, j%Ny]
+            n = vecteurs_normaux[i, j]
 
             v = refract(u, n)
 
@@ -217,7 +222,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
 
 
-def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=10**10, l=1):
+def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=10**16, l=1):
     "Calcule le spectre de vagues de Phillips."
 
     k = np.array([kx, ky])
@@ -268,8 +273,8 @@ def plot_surface(surface, save=False, n=None, fact=1):
         plt.close(fig)
 
 
-def save_image(surface, rayons, save=True, n=None):
-    trajectoires = calcul_trajectoires(rayons, surface)
+def save_image(surface, rayons, A, B, save=True, n=None):
+    trajectoires = calcul_trajectoires(rayons, surface, A, B, n*dt)
     motif = calcul_motifs(trajectoires)
 
     motif = np.sqrt(motif)
@@ -290,7 +295,8 @@ dt = 1/10
 def omega(kx, ky):
     k = np.sqrt(kx**2 + ky**2)
     # return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
-    return np.sqrt(k*g*(1+(k/kc)**2))
+    # return np.sqrt(k*g*(1+(k/kc)**2))
+    return np.sqrt(k*g)
 
 
 OMEGA = np.zeros((Nx, Ny))
@@ -304,17 +310,23 @@ for i in range(Nx):
             OMEGA[i, j] = 1e-5
 
 def vecteurs_normaux_avec_fourier(A, B, t):
-    return (np.array([0, 0, 1]) - gradient_surface(A, B, t)[:,:])/np.sqrt(1+np.linalg.norm(gradient_surface(A, B, t)[:,:])**2)
+    return (np.array([0,0,1]) - gradient_surface(A, B, t)[:,:])/np.sqrt(1+np.linalg.norm(gradient_surface(A, B, t)[:,:])**2)
 
 def gradient_surface(A, B, t):
-    return np.real(np.ifft2(1j*vecteurs_k[:,:]*surface_fourier(A, B, t)))
+    grad_x = np.real(np.fft.ifft2(1j*vecteurs_k[:,:,0]*surface_fourier(A, B, t)[:,:]))
+    grad_y = np.real(np.fft.ifft2(1j*vecteurs_k[:, :,1]*surface_fourier(A, B, t)[:,:]))
+    grad = np.zeros((Nx, Ny, 3))
+    for i in range(Nx):
+        for j in range(Ny):
+            grad[i,j] = np.array([grad_x[i,j], grad_y[i,j], 0])
+    return grad
 
 def surface_fourier(A, B, t):
-    return (-1)**(i-Nx/2+j-Ny/2) * (A[:, :]*np.exp(
+    return  (A[:, :]*np.exp(
         1j*(- OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t)))
 
 def surface_simple(u, t, A, B):
-    u[:, :] = h + np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :]))
+    u[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :]))
 
 
 def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
@@ -332,5 +344,5 @@ def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
         if save_surface:
             plot_surface(u, save=True, n=n)
         if save_motif:
-            save_image(u, rayons, n=n)
+            save_image(u, rayons, A, B, n=n)
         surface_simple(u, n*dt, A, B)
