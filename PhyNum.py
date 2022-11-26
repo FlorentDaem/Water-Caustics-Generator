@@ -20,8 +20,8 @@ import mpl_toolkits.mplot3d.axes3d as p3
 n1 = 1
 n2 = 1.3
 
-Lx = 10
-Nx = 2**5
+Lx = 64
+Nx = 2**8
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -30,7 +30,7 @@ dy = Ly/Ny
 
 
 
-h = 3  # faire varier la profondeur d'eau va jouer sur les motifs
+h = Lx/2  # faire varier la profondeur d'eau va jouer sur les motifs
 a = 0.1*10 # Amplitude des vagues
 Kx, Ky = (np.pi/Lx, np.pi/Ly)  # Vecteurs d'onde
 
@@ -211,7 +211,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
 
 
-def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=10**6, l=0.01):
+def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=10**10, l=1):
     "Calcule le spectre de vagues de Phillips."
 
     k = np.array([kx, ky])
@@ -300,17 +300,8 @@ for i in range(Nx):
 
 
 def surface_simple(u, t, A, B):
-    for i in range(Nx):
-        for j in range(Ny):
-
-            u[i, j] = h
-
-            
-            integrande = np.ones((Nx, Ny), dtype=complex)*h
-
-            integrande[:, :] = (-1)**(i-Nx/2+j-Ny/2) *(A[:, :]*np.exp(1j*( - OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*( + OMEGA[:, :]*t)))
-            
-            u[i, j] += np.real(np.fft.ifft2(integrande)[i, j])
+    u[:, :] = h + np.real(np.fft.ifft2((-1)**(i-Nx/2+j-Ny/2) * (A[:, :]*np.exp(
+                1j*(- OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t))))[:, :])
 
 
 def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
