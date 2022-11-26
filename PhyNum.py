@@ -20,8 +20,8 @@ import mpl_toolkits.mplot3d.axes3d as p3
 n1 = 1
 n2 = 1.3
 
-Lx = 64
-Nx = 2**8
+Lx = 10
+Nx = 2**6
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -30,7 +30,7 @@ dy = Ly/Ny
 
 
 
-h = Lx/2  # faire varier la profondeur d'eau va jouer sur les motifs
+h = 5  # faire varier la profondeur d'eau va jouer sur les motifs
 a = 0.1*10 # Amplitude des vagues
 Kx, Ky = (np.pi/Lx, np.pi/Ly)  # Vecteurs d'onde
 
@@ -44,6 +44,12 @@ grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
 
 dkx = 2*np.pi/Lx
 dky = 2*np.pi/Ly
+
+
+vecteurs_k = np.zeros((Nx, Ny, 2))
+for i in range(Nx):
+    for j in range(Ny):
+        vecteurs_k[i,j] = np.array([(i-Nx/2)*dkx, (j-Ny/2)*dky])
 
 g = 9.81
 kc = 500
@@ -274,7 +280,7 @@ def save_image(surface, rayons, save=True, n=None):
 
 
 
-frames = 50
+frames = 25
 dt = 1/10
 
 
@@ -297,11 +303,18 @@ for i in range(Nx):
         if OMEGA[i, j] == 0:
             OMEGA[i, j] = 1e-5
 
+def vecteurs_normaux_avec_fourier(A, B, t):
+    return (np.array([0, 0, 1]) - gradient_surface(A, B, t)[:,:])/np.sqrt(1+np.linalg.norm(gradient_surface(A, B, t)[:,:])**2)
 
+def gradient_surface(A, B, t):
+    return np.real(np.ifft2(1j*vecteurs_k[:,:]*surface_fourier(A, B, t)))
+
+def surface_fourier(A, B, t):
+    return (-1)**(i-Nx/2+j-Ny/2) * (A[:, :]*np.exp(
+        1j*(- OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t)))
 
 def surface_simple(u, t, A, B):
-    u[:, :] = h + np.real(np.fft.ifft2((-1)**(i-Nx/2+j-Ny/2) * (A[:, :]*np.exp(
-                1j*(- OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t))))[:, :])
+    u[:, :] = h + np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :]))
 
 
 def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
