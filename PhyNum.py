@@ -20,14 +20,14 @@ import mpl_toolkits.mplot3d.axes3d as p3
 n1 = 1
 n2 = 1.3
 
+
 Lx = 10
-Nx = 2**6
+Nx = 2**8
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
 Ny = Nx
 dy = Ly/Ny
-
 
 
 h = 5  # faire varier la profondeur d'eau va jouer sur les motifs
@@ -147,6 +147,7 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
     s_intersection = recherche_zero.root
     I = point_rayon(rayon, s_intersection)
     return I
+
 
 
 def calcul_trajectoires(rayons, surface, A, B, t):
