@@ -295,9 +295,9 @@ dt = 1/10
 
 def omega(kx, ky):
     k = np.sqrt(kx**2 + ky**2)
-    # return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
+    return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
     # return np.sqrt(k*g*(1+(k/kc)**2))
-    return np.sqrt(k*g)
+    # return np.sqrt(k*g)
 
 
 OMEGA = np.zeros((Nx, Ny))
