@@ -105,7 +105,7 @@ def vecteurs_de_surface(surface):
 
 def point_rayon(rayon, s):
     '''Renvoie le point qui correspond au rayon étendu à une distance s'''
-    P, vec = rayon
+    P, vec, lum = rayon
     return P + s*vec
 
 
@@ -146,6 +146,8 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
     return I
 
 
+def intensitee_refract(u, n):
+    return 1
 
 def calcul_trajectoires(rayons, surface, A, B, t):
     '''Renvoie les trajectoires de chaque rayon. C'est à dire l'ensemble de trois points (L, I, S),
@@ -156,7 +158,7 @@ def calcul_trajectoires(rayons, surface, A, B, t):
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
         for j in range(Ny-1):
             rayon = rayons[i][j]
-            L, u = rayon
+            L, u, lum = rayon
             I = find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='surface')
 
             i, j = indices_du_point(I)
@@ -164,11 +166,13 @@ def calcul_trajectoires(rayons, surface, A, B, t):
 
             v = refract(u, n)
 
-            rayon = (I, v)
+            R = intensitee_refract(u,n)
+
+            rayon = (I, v, R*lum)
 
             S = find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='sol')
 
-            trajectoires.append([L, I, S])
+            trajectoires.append([L, I, S, lum])
     return trajectoires
 
 
@@ -176,13 +180,13 @@ def calcul_motifs(trajectoires):
     motif = np.zeros((Nx, Ny))
 
     for trajectoire in trajectoires:
-        L, I, S = trajectoire
+        L, I, S, lum = trajectoire
         i_S, j_S = indices_du_point(S)
 
         # if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
         #     motif[i_S, j_S] += 1
 
-        motif[i_S%Nx, j_S%Ny] += 1
+        motif[i_S%Nx, j_S%Ny] += lum
 
     max_I = motif.max()
     # règle l'intensité de la lumière en fonction du nombre d'impacts de rayons
@@ -202,7 +206,7 @@ def motif_to_alpha(motif):
 def affiche_rayons(trajectoires, surface, save=False):
     '''Dessine les rayons et l'eau dans le plan y=0.'''
     for trajectoire in trajectoires:
-        L, I, S = trajectoire
+        L, I, S, lum = trajectoire
         iL, jL = indices_du_point(L)
         # iS, jS = indices_du_point(S)
 
