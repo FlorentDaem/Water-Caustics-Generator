@@ -21,7 +21,7 @@ n1 = 1
 n2 = 1.3
 
 
-Lx = 10
+Lx = 4
 Nx = 2**5
 dx = Lx/Nx # voir pour avoir un nombre rond
 
@@ -30,7 +30,7 @@ Ny = Nx
 dy = Ly/Ny
 
 
-h = 5  # faire varier la profondeur d'eau va jouer sur les motifs
+h = 3  # faire varier la profondeur d'eau va jouer sur les motifs
 a = 0.1*10 # Amplitude des vagues
 Kx, Ky = (np.pi/Lx, np.pi/Ly)  # Vecteurs d'onde
 
@@ -223,7 +223,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
 
 
-def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=5**10, l=1):
+def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=0.001, l=0.01):
     "Calcule le spectre de vagues de Phillips."
 
     k = np.array([kx, ky])
