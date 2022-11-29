@@ -21,7 +21,7 @@ n2 = 1.3
 
 
 Lx = 4
-Nx = 2**5
+Nx = 2**8
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -146,8 +146,10 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
     return I
 
 
-def intensitee_refract(u, n):
-    return 1
+def intensitee_refract(ri, n):
+    theta_i = np.arccos(-np.dot(ri, n))
+    theta_r = np.arcsin(n1/n2*np.sin(theta_i))
+    return 1/2*((np.sin(theta_r-theta_i)**2)/(np.sin(theta_i+theta_r)**2) + (np.tan(theta_r-theta_i)**2)/(np.tan(theta_i+theta_r)**2))
 
 def calcul_trajectoires(rayons, surface, A, B, t):
     '''Renvoie les trajectoires de chaque rayon. C'est à dire l'ensemble de trois points (L, I, S),
@@ -167,8 +169,10 @@ def calcul_trajectoires(rayons, surface, A, B, t):
             v = refract(u, n)
 
             R = intensitee_refract(u,n)
+            # print(R)
+            T = 1-R
 
-            rayon = (I, v, R*lum)
+            rayon = (I, v, T*lum)
 
             S = find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='sol')
 
