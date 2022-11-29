@@ -30,8 +30,6 @@ dy = Ly/Ny
 
 
 h = 3  # faire varier la profondeur d'eau va jouer sur les motifs
-a = 0.1*10 # Amplitude des vagues
-Kx, Ky = (np.pi/Lx, np.pi/Ly)  # Vecteurs d'onde
 
 Lz = Lx
 
