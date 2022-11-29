@@ -11,7 +11,6 @@ import scipy.optimize
 from tqdm import tqdm
 from mpl_toolkits.mplot3d import Axes3D
 import random as rd
-import noise
 
 import mpl_toolkits.mplot3d.axes3d as p3
 
