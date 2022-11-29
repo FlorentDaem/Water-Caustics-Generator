@@ -22,7 +22,7 @@ n2 = 1.3
 
 
 Lx = 10
-Nx = 2**8
+Nx = 2**5
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -217,13 +217,13 @@ def affiche_rayons(trajectoires, surface, save=False):
     plt.xlim(-Lx/2, Lx/2)
     plt.ylim(0, Lz)
     if save:
-        plt.savefig("rayons.png")
+        plt.savefig("rayons.pdf")
 
 
 
 
 
-def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=10**16, l=1):
+def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=5**10, l=1):
     "Calcule le spectre de vagues de Phillips."
 
     k = np.array([kx, ky])
@@ -323,7 +323,7 @@ def gradient_surface(A, B, t):
     return grad
 
 def surface_fourier(A, B, t):
-    return  (A[:, :]*np.exp(
+    return  Nx*Ny*(A[:, :]*np.exp(
         1j*(- OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t)))
 
 def surface_simple(u, t, A, B):
