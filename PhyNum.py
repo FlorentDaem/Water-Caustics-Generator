@@ -21,7 +21,7 @@ n2 = 1.3
 
 
 Lx = 4
-Nx = 2**8
+Nx = 2**5
 dx = Lx/Nx # voir pour avoir un nombre rond
 
 Ly = Lx
@@ -33,8 +33,8 @@ h = 3  # faire varier la profondeur d'eau va jouer sur les motifs
 
 Lz = Lx
 
-vals_x = np.array([(i-Nx/2)*dx for i in range(Nx)])
-vals_y = np.array([(j-Ny/2)*dy for j in range(Ny)])
+vals_x = np.array([(i)*dx for i in range(Nx)])
+vals_y = np.array([(j)*dy for j in range(Ny)])
 
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
@@ -44,6 +44,8 @@ dky = 2*np.pi/Ly
 
 
 vecteurs_k = np.zeros((Nx, Ny, 2))
+vecteurs_kx = np.array([(i-Nx/2)*dkx for i in range(Nx)])
+vecteurs_ky = np.array([(j-Ny/2)*dky for j in range(Ny)])
 for i in range(Nx):
     for j in range(Ny):
         vecteurs_k[i,j] = np.array([(i-Nx/2)*dkx, (j-Ny/2)*dky])
@@ -91,10 +93,10 @@ def vecteurs_de_surface(surface):
     for i in range(Nx-1):
         vecteurs_normaux.append([])
         for j in range(Ny-1):
-            A = np.array([(i-Nx/2)*dx, (j-Ny/2)*dy, surface[i, j]])
-            B = np.array([((i-Nx/2)+1)*dx, (j-Ny/2)*dy, surface[i+1, j]])
+            A = np.array([(i)*dx, (j)*dy, surface[i, j]])
+            B = np.array([((i)+1)*dx, (j)*dy, surface[i+1, j]])
             AB = vec(A, B)
-            C = np.array([(i-Nx/2)*dx, ((j-Ny/2)+1)*dy, surface[i, j+1]])
+            C = np.array([(i)*dx, ((j)+1)*dy, surface[i, j+1]])
             AC = vec(A, C)
 
             n = np.cross(AB, AC)
@@ -111,8 +113,8 @@ def point_rayon(rayon, s):
 
 def indices_du_point(P):
     '''Renvoie les indices du pixel qui correspond au point P'''
-    i = int(np.dot(P, np.array([1, 0, 0]))/dx+Nx/2)
-    j = int(np.dot(P, np.array([0, 1, 0]))/dy+Ny/2)
+    i = int(np.dot(P, np.array([1, 0, 0]))/dx)
+    j = int(np.dot(P, np.array([0, 1, 0]))/dy)
     return (i, j)
 
 
@@ -130,7 +132,7 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, intersection='sol'):
         n = np.array([0, 0, 1])
     
     elif intersection == 'surface':
-        P = np.array([(i-Nx/2)*dx, (j-Ny/2)*dx, surface[i%Nx, j%Ny]])
+        P = np.array([(i)*dx, (j)*dx, surface[i%Nx, j%Ny]])
         n = vecteurs_normaux[i%Nx, j%Ny]
     
     return np.dot(n, I-P)
@@ -219,7 +221,7 @@ def affiche_rayons(trajectoires, surface, save=False):
 
     plt.plot(vals_x, surface[:,0])
 
-    plt.xlim(-Lx/2, Lx/2)
+    plt.xlim(-Lx/2*0, Lx/2*2)
     plt.ylim(0, Lz)
     if save:
         plt.savefig("rayons.pdf")
@@ -266,8 +268,8 @@ def random_h0(kx, ky, Ph, V):
 def plot_surface(surface, save=False, n=None, fact=1):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlim(-Lx/2, Lx/2)
-    ax.set_ylim(-Ly/2, Ly/2)
+    ax.set_xlim(-Lx/2*0, Lx/2*2)
+    ax.set_ylim(-Ly/2*0, Ly/2*2)
     ax.set_zlim(0, Lz)
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
@@ -316,11 +318,18 @@ for i in range(Nx):
             OMEGA[i, j] = 1e-5
 
 def vecteurs_normaux_avec_fourier(A, B, t):
-    return (np.array([0,0,1]) - gradient_surface(A, B, t)[:,:])/np.sqrt(1+np.linalg.norm(gradient_surface(A, B, t)[:,:])**2)
+    grad_x = np.real(np.fft.ifft(1j*vecteurs_k[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1)))
+    grad_y = np.real(np.fft.ifft(1j*vecteurs_k[:,:,1]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=0)))
+    norms = np.zeros((Nx, Ny, 3))
+    for i in range(Nx):
+        for j in range(Ny):
+            norms[i,j] = np.array([-grad_x[i,j], -grad_y[i,j], 1])/np.sqrt(1+grad_x[i,j]**2+grad_y[i,j]**2)
+
+    return norms
 
 def gradient_surface(A, B, t):
-    grad_x = np.real(np.fft.ifft2(1j*vecteurs_k[:,:,0]*surface_fourier(A, B, t)[:,:]))
-    grad_y = np.real(np.fft.ifft2(1j*vecteurs_k[:, :,1]*surface_fourier(A, B, t)[:,:]))
+    grad_x = np.real(np.fft.ifft(1j*vecteurs_k[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1)))
+    grad_y = np.real(np.fft.ifft(1j*vecteurs_k[:,:,1]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=0)))
     grad = np.zeros((Nx, Ny, 3))
     for i in range(Nx):
         for j in range(Ny):
