@@ -245,7 +245,7 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
         Distance
     vecteurs_normaux : Array (2D)
         Tableau des vecteurs normaux à la surface aux points (i,j)
-    intersection : str
+    interface : str
         Nom de l'interface
 
     Returns
@@ -269,8 +269,26 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
 
 
 def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='sol'):
-    '''Renvoie le point d'intersection du rayon avec la surface d'eau.
-    On fait une recherche de zéro à l'aide de la fonction test_intersection.'''
+    """
+    Renvoie le point d'intersection du rayon avec l'interface.
+    On fait une recherche de zéro de la fonction test_intersection (en fonction de s).
+
+    Parameters
+    ----------
+    rayon : Array
+        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
+    surface : Array (2D)
+        Hauteur de la surface aux points (i,j)
+    vecteurs_normaux : Array (2D)
+        Tableau des vecteurs normaux à la surface aux points (i,j)
+    interface : str
+        Nom de l'interface
+
+    Returns
+    -------
+    Array
+        Coordonnées du point d'intersection
+    """
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
         rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz)
     s_intersection = recherche_zero.root
@@ -279,6 +297,21 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
 
 
 def intensitee_refract(ri, n):
+    """
+    Renvoie le coefficient de réflection du rayon incident ri réfléchi par la surface de normale n.
+
+    Parameters
+    ----------
+    ri : Array numpy
+        Coordonnées du rayon incident
+    n : Array numpy
+        Coordonnées du vecteur normal
+
+    Returns
+    -------
+    float
+        Coefficient de réflection
+    """
     theta_i = np.arccos(-np.dot(ri, n))
     theta_r = np.arcsin(n1/n2*np.sin(theta_i))
     return 1/2*((np.sin(theta_r-theta_i)**2)/(np.sin(theta_i+theta_r)**2) + (np.tan(theta_r-theta_i)**2)/(np.tan(theta_i+theta_r)**2))
