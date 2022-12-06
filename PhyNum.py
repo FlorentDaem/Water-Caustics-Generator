@@ -31,10 +31,13 @@ dy = Ly/Ny
 
 h = 3  # faire varier la profondeur d'eau va jouer sur les motifs
 
-Lz = Lx
+if h < Lx:
+    Lz = Lx
+else :
+    Lz = 2*h
 
-vals_x = np.array([(i)*dx for i in range(Nx)])
-vals_y = np.array([(j)*dy for j in range(Ny)])
+vals_x = np.array([i*dx for i in range(Nx)])
+vals_y = np.array([j*dy for j in range(Ny)])
 
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
@@ -44,8 +47,6 @@ dky = 2*np.pi/Ly
 
 
 vecteurs_k = np.zeros((Nx, Ny, 2))
-vecteurs_kx = np.array([(i-Nx/2)*dkx for i in range(Nx)])
-vecteurs_ky = np.array([(j-Ny/2)*dky for j in range(Ny)])
 for i in range(Nx):
     for j in range(Ny):
         vecteurs_k[i,j] = np.array([(i-Nx/2)*dkx, (j-Ny/2)*dky])
@@ -62,41 +63,124 @@ for i in range(Nx):
 ## Fonctions
 
 def vec(A, B):
-    '''Renvoie le vecteur AB'''
+    """
+    Renvoie le vecteur AB.
+    Les points A et B doivent avoir le même nombre de coordonnées.
+
+    Parameters
+    ----------
+    A : Array numpy
+        Coordonnées du point A
+    B : Array numpy
+        Coordonnées du point B
+
+    Returns
+    -------
+    Array numpy
+        Vecteur AB
+    """
     return B-A
 
 def projection(v, n):
-    '''Renvoie la composante de v qui est selon n'''
+    """
+    Projette le vecteur v sur le vecteur n.
+
+    Parameters
+    ----------
+    v : Array numpy
+        Coordonnées du vecteur à projeter
+    n : Array numpy
+        Coordonnées du vecteur sur lequel on veut projeter
+
+    Returns
+    -------
+    Array numpy
+        Coordonnées du vecteur projection de v sur n
+    """
     return np.dot(v, n) * n
 
 def symetrie(v, n):
-    '''Revoie le symétrique de v par rapport à n'''
+    """
+    Revoie le vecteur symétrique de v par rapport à l'axe défini par n.
+
+    Parameters
+    ----------
+    v : Array numpy
+        Coordonnées du vecteur initial
+    n : Array numpy
+        Coordonnées du vecteur définissant l'axe
+
+    Returns
+    -------
+    Array numpy
+        Coordonnées du vecteur symétrique
+    """
     return 2*projection(v,n) - v
 
 def reflect(v, n):
-    '''Renvoie la direction du rayon réfléchi'''
+    """
+    Renvoie la direction du rayon v une fois réfléchi sur une surface de normale n.
+
+    Parameters
+    ----------
+    v : Array numpy
+        Coordonnées du rayon initial
+    n : Array numpy
+        Coordonnées du vecteur normal
+
+    Returns
+    -------
+    Array numpy
+        Coordonnées du rayon réfléchi
+    """
     return -symetrie(v, n)
 
 def cos_theta_refract(cos_theta1):
     return np.sqrt(1-(n1/n2)**2 * (1-cos_theta1**2))
 
 def refract(ri, n):
-    '''Renvoie la direction du rayon réfracté'''
+    """
+    Renvoie la direction du rayon ri une fois réfracté sur une surface de normale n.
+
+    Parameters
+    ----------
+    ri : Array numpy
+        Coordonnées du rayon initial
+    n : Array numpy
+        Coordonnées du vecteur normal
+
+    Returns
+    -------
+    Array numpy
+        Coordonnées du rayon réfracté
+    """
     cos_theta1 = -np.dot(ri, n)
     rr = n1/n2*ri + (n1/n2*cos_theta1- cos_theta_refract(cos_theta1))*n
     rr = 1/np.linalg.norm(rr)*rr
     return rr
 
 def vecteurs_de_surface(surface):
-    '''Renvoie les vecteurs normaux à la surface surface.'''
+    """
+    Renvoie les vecteurs normaux à la surface en calculant des produits vectoriels.
+
+    Parameters
+    ----------
+    surface : Array (2D)
+        Hauteur de la surface aux points (i,j)
+
+    Returns
+    -------
+    Array (2D)
+        Tableau des vecteurs normaux à la surface aux points (i,j)
+    """
     vecteurs_normaux =[]
     for i in range(Nx-1):
         vecteurs_normaux.append([])
         for j in range(Ny-1):
-            A = np.array([(i)*dx, (j)*dy, surface[i, j]])
-            B = np.array([((i)+1)*dx, (j)*dy, surface[i+1, j]])
+            A = np.array([i*dx, j*dy, surface[i, j]])
+            B = np.array([(i+1)*dx, j*dy, surface[i+1, j]])
             AB = vec(A, B)
-            C = np.array([(i)*dx, ((j)+1)*dy, surface[i, j+1]])
+            C = np.array([i*dx, (j+1)*dy, surface[i, j+1]])
             AC = vec(A, C)
 
             n = np.cross(AB, AC)
@@ -106,13 +190,39 @@ def vecteurs_de_surface(surface):
 
 
 def point_rayon(rayon, s):
-    '''Renvoie le point qui correspond au rayon étendu à une distance s'''
+    """
+    Renvoie le point qui correspond au rayon étendu à une distance s.
+
+    Parameters
+    ----------
+    rayon : Array
+        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
+    s : float
+        Distance
+
+    Returns
+    -------
+    Array numpy
+        Coordonnées du point d'arrivée
+    """
     P, vec, lum = rayon
     return P + s*vec
 
 
 def indices_du_point(P):
-    '''Renvoie les indices du pixel qui correspond au point P'''
+    """
+    Renvoie les indices du pixel qui correspond au point P
+
+    Parameters
+    ----------
+    P : Array numpy
+        Coordonnées du point P
+
+    Returns
+    -------
+    (int, int)
+        Indices i et j tels que (i*dx, j*dy) = P
+    """
     i = int(np.dot(P, np.array([1, 0, 0]))/dx)
     j = int(np.dot(P, np.array([0, 1, 0]))/dy)
     return (i, j)
@@ -121,19 +231,39 @@ def indices_du_point(P):
 
 
 
-def test_intersection(rayon, surface, s, vecteurs_normaux, intersection='sol'):
-    '''Renvoie 0 si le rayon à la distance s appartient à la surface (au pixel) d'eau corespondant'''
+def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
+    """
+    Renvoie 0 si le rayon à la distance s appartient à l'interface.
+
+    Parameters
+    ----------
+    rayon : Array
+        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
+    surface : Array (2D)
+        Hauteur de la surface aux points (i,j)
+    s : float
+        Distance
+    vecteurs_normaux : Array (2D)
+        Tableau des vecteurs normaux à la surface aux points (i,j)
+    intersection : str
+        Nom de l'interface
+
+    Returns
+    -------
+    float
+        Nombre égal à 0 si et seulement si s*vec appartient à l'interface.
+    """
 
     I = point_rayon(rayon, s)
     i, j = indices_du_point(I)
 
-    if intersection == 'sol':
+    if interface == 'sol':
         P = np.zeros(3)
         n = np.array([0, 0, 1])
     
-    elif intersection == 'surface':
-        P = np.array([(i)*dx, (j)*dx, surface[i%Nx, j%Ny]])
-        n = vecteurs_normaux[i%Nx, j%Ny]
+    elif interface == 'surface':
+        P = np.array([i*dx, j*dx, surface[i, j]])
+        n = vecteurs_normaux[i, j]
     
     return np.dot(n, I-P)
 
@@ -142,7 +272,7 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
     '''Renvoie le point d'intersection du rayon avec la surface d'eau.
     On fait une recherche de zéro à l'aide de la fonction test_intersection.'''
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
-        rayon, surface, s, vecteurs_normaux, intersection=intersection), x0=0, x1=Lz)
+        rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz)
     s_intersection = recherche_zero.root
     I = point_rayon(rayon, s_intersection)
     return I
