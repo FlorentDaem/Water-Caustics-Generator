@@ -14,150 +14,17 @@ import random as rd
 
 import mpl_toolkits.mplot3d.axes3d as p3
 
-## Constantes
 
-n1 = 1
-n2 = 1.3
-
-
-Lx = 4
-Nx = 2**5
-dx = Lx/Nx # voir pour avoir un nombre rond
-
-Ly = Lx
-Ny = Nx
-dy = Ly/Ny
+from constantes import *
+from raytracing import *
+from affichages import *
 
 
-h = 3  # faire varier la profondeur d'eau va jouer sur les motifs
-
-if h < Lx:
-    Lz = Lx
-else :
-    Lz = 2*h
-
-vals_x = np.array([i*dx for i in range(Nx)])
-vals_y = np.array([j*dy for j in range(Ny)])
-
-# Définition d'un meshgrid
-grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
-
-dkx = 2*np.pi/Lx
-dky = 2*np.pi/Ly
-
-
-vecteurs_k = np.zeros((Nx, Ny, 2))
-for i in range(Nx):
-    for j in range(Ny):
-        vecteurs_k[i,j] = np.array([(i-Nx/2)*dkx, (j-Ny/2)*dky])
-
-g = 9.81
-kc = 500
-
-fact_1 = np.ones((Nx, Ny))
-for i in range(Nx):
-    for j in range(Ny):
-        fact_1[i,j] = (-1)**(i+j)
 
 
 ## Fonctions
 
-def vec(A, B):
-    """
-    Renvoie le vecteur AB.
-    Les points A et B doivent avoir le même nombre de coordonnées.
 
-    Parameters
-    ----------
-    A : Array numpy
-        Coordonnées du point A
-    B : Array numpy
-        Coordonnées du point B
-
-    Returns
-    -------
-    Array numpy
-        Vecteur AB
-    """
-    return B-A
-
-def projection(v, n):
-    """
-    Projette le vecteur v sur le vecteur n.
-
-    Parameters
-    ----------
-    v : Array numpy
-        Coordonnées du vecteur à projeter
-    n : Array numpy
-        Coordonnées du vecteur sur lequel on veut projeter
-
-    Returns
-    -------
-    Array numpy
-        Coordonnées du vecteur projection de v sur n
-    """
-    return np.dot(v, n) * n
-
-def symetrie(v, n):
-    """
-    Revoie le vecteur symétrique de v par rapport à l'axe défini par n.
-
-    Parameters
-    ----------
-    v : Array numpy
-        Coordonnées du vecteur initial
-    n : Array numpy
-        Coordonnées du vecteur définissant l'axe
-
-    Returns
-    -------
-    Array numpy
-        Coordonnées du vecteur symétrique
-    """
-    return 2*projection(v,n) - v
-
-def reflect(v, n):
-    """
-    Renvoie la direction du rayon v une fois réfléchi sur une surface de normale n.
-
-    Parameters
-    ----------
-    v : Array numpy
-        Coordonnées du rayon initial
-    n : Array numpy
-        Coordonnées du vecteur normal
-
-    Returns
-    -------
-    Array numpy
-        Coordonnées du rayon réfléchi
-    """
-    return -symetrie(v, n)
-
-def cos_theta_refract(cos_theta1):
-    return np.sqrt(1-(n1/n2)**2 * (1-cos_theta1**2))
-
-def refract(ri, n):
-    """
-    Renvoie la direction du rayon ri une fois réfracté sur une surface de normale n.
-
-    Parameters
-    ----------
-    ri : Array numpy
-        Coordonnées du rayon initial
-    n : Array numpy
-        Coordonnées du vecteur normal
-
-    Returns
-    -------
-    Array numpy
-        Coordonnées du rayon réfracté
-    """
-    cos_theta1 = -np.dot(ri, n)
-    rr = n1/n2*ri + (n1/n2*cos_theta1- cos_theta_refract(cos_theta1))*n
-    rr = 1/np.linalg.norm(rr)*rr
-    return rr
 
 def vecteurs_de_surface(surface):
     """
@@ -189,43 +56,10 @@ def vecteurs_de_surface(surface):
     return np.array(vecteurs_normaux)
 
 
-def point_rayon(rayon, s):
-    """
-    Renvoie le point qui correspond au rayon étendu à une distance s.
-
-    Parameters
-    ----------
-    rayon : Array
-        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
-    s : float
-        Distance
-
-    Returns
-    -------
-    Array numpy
-        Coordonnées du point d'arrivée
-    """
-    P, vec, lum = rayon
-    return P + s*vec
 
 
-def indices_du_point(P):
-    """
-    Renvoie les indices du pixel qui correspond au point P
 
-    Parameters
-    ----------
-    P : Array numpy
-        Coordonnées du point P
 
-    Returns
-    -------
-    (int, int)
-        Indices i et j tels que (i*dx, j*dy) = P
-    """
-    i = int(np.dot(P, np.array([1, 0, 0]))/dx)
-    j = int(np.dot(P, np.array([0, 1, 0]))/dy)
-    return (i, j)
 
 
 
@@ -296,25 +130,7 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
     return I
 
 
-def intensitee_refract(ri, n):
-    """
-    Renvoie le coefficient de réflection du rayon incident ri réfléchi par la surface de normale n.
 
-    Parameters
-    ----------
-    ri : Array numpy
-        Coordonnées du rayon incident
-    n : Array numpy
-        Coordonnées du vecteur normal
-
-    Returns
-    -------
-    float
-        Coefficient de réflection
-    """
-    theta_i = np.arccos(-np.dot(ri, n))
-    theta_r = np.arcsin(n1/n2*np.sin(theta_i))
-    return 1/2*((np.sin(theta_r-theta_i)**2)/(np.sin(theta_i+theta_r)**2) + (np.tan(theta_r-theta_i)**2)/(np.tan(theta_i+theta_r)**2))
 
 def calcul_trajectoires(rayons, surface, A, B, t):
     '''Renvoie les trajectoires de chaque rayon. C'est à dire l'ensemble de trois points (L, I, S),
@@ -345,49 +161,10 @@ def calcul_trajectoires(rayons, surface, A, B, t):
     return trajectoires
 
 
-def calcul_motifs(trajectoires):
-    motif = np.zeros((Nx, Ny))
 
-    for trajectoire in trajectoires:
-        L, I, S, lum = trajectoire
-        i_S, j_S = indices_du_point(S)
-
-        # if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
-        #     motif[i_S, j_S] += 1
-
-        motif[i_S%Nx, j_S%Ny] += lum
-
-    max_I = motif.max()
-    # règle l'intensité de la lumière en fonction du nombre d'impacts de rayons
-    motif[:, :] = motif[:, :]/max_I
-    return motif
-
-def motif_to_alpha(motif):
-    image = np.zeros((Nx, Ny, 4))
-    for i in range(Nx):
-        for j in range(Ny):
-            val = motif[i, j]
-            alpha = val
-            image[i,j] = [val, val, val, alpha]
-    return image
 
     
-def affiche_rayons(trajectoires, surface, save=False):
-    '''Dessine les rayons et l'eau dans le plan y=0.'''
-    for trajectoire in trajectoires:
-        L, I, S, lum = trajectoire
-        iL, jL = indices_du_point(L)
-        # iS, jS = indices_du_point(S)
 
-        if jL == 0:
-            plt.plot([L[0], I[0], S[0]], [L[2], I[2], S[2]], color='green')
-
-    plt.plot(vals_x, surface[:,0])
-
-    plt.xlim(-Lx/2*0, Lx/2*2)
-    plt.ylim(0, Lz)
-    if save:
-        plt.savefig("rayons.pdf")
 
 
 
@@ -428,36 +205,7 @@ def random_h0(kx, ky, Ph, V):
 
 
 
-def plot_surface(surface, save=False, n=None, fact=1):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlim(-Lx/2*0, Lx/2*2)
-    ax.set_ylim(-Ly/2*0, Ly/2*2)
-    ax.set_zlim(0, Lz)
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    ax.plot_surface(grille_X, grille_Y, (surface-h)*fact + h, cmap="Blues",
-                    linewidth=0, antialiased=False, alpha=0.9)
-    if save:
-        fig.savefig(f"Frames/frame{n}.png")
-        plt.close(fig)
 
-
-def save_image(surface, rayons, A, B, save=True, n=None):
-    trajectoires = calcul_trajectoires(rayons, surface, A, B, n*dt)
-    motif = calcul_motifs(trajectoires)
-
-    motif = np.sqrt(motif)
-
-    image = motif_to_alpha(motif)
-    plt.imsave(f"Frames/frame {n} image.png", image)
-
-
-
-
-frames = 25
-dt = 1/10
 
 
 
@@ -507,6 +255,10 @@ def surface_simple(u, t, A, B):
     u[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :]))
 
 
+frames = 25
+dt = 1/10
+
+
 def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
 
     A = np.zeros((Nx, Ny), dtype=complex)
@@ -517,10 +269,10 @@ def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
 
             A[i, j] = h0[i, j]
             B[i, j] = np.conjugate(h0[-i+(Nx-1)*0, -j+(Nx-1)*0])
-    
+
     for n in tqdm(range(frames), desc="frame"):
         if save_surface:
             plot_surface(u, save=True, n=n)
         if save_motif:
-            save_image(u, rayons, A, B, n=n)
+            save_image(u, calcul_trajectoires(rayons, u, A, B, n*dt), n)
         surface_simple(u, n*dt, A, B)
