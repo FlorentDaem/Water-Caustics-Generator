@@ -5,7 +5,6 @@
 ## Imports
 
 from PIL import Image
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize
 from tqdm import tqdm
@@ -54,10 +53,6 @@ def vecteurs_de_surface(surface):
             n = 1/np.linalg.norm(n)*n
             vecteurs_normaux[i].append(n)
     return np.array(vecteurs_normaux)
-
-
-
-
 
 
 
@@ -204,18 +199,9 @@ def random_h0(kx, ky, Ph, V):
 
 
 
-
-
-
-
-
-
-
 def omega(kx, ky):
     k = np.sqrt(kx**2 + ky**2)
     return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
-    # return np.sqrt(k*g*(1+(k/kc)**2))
-    # return np.sqrt(k*g)
 
 
 OMEGA = np.zeros((Nx, Ny))
@@ -251,28 +237,30 @@ def surface_fourier(A, B, t):
     return  Nx*Ny*(A[:, :]*np.exp(
         1j*(- OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t)))
 
-def surface_simple(u, t, A, B):
-    u[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :]))
+def genere_surface(surface, t, A, B):
+    surface[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :]))
 
 
 frames = 25
 dt = 1/10
 
 
-def genere_animation_simple(u, h0, rayons, save_surface=True, save_motif=False):
+
+
+def genere_animation_simple(surface, h0, rayons, save_surface=True, save_motif=False):
 
     A = np.zeros((Nx, Ny), dtype=complex)
     B = np.zeros((Nx, Ny), dtype=complex)
 
-    for i in range(0, Nx):
-        for j in range(0, Ny):
+    for i in range(Nx):
+        for j in range(Ny):
 
             A[i, j] = h0[i, j]
             B[i, j] = np.conjugate(h0[-i+(Nx-1)*0, -j+(Nx-1)*0])
 
     for n in tqdm(range(frames), desc="frame"):
         if save_surface:
-            plot_surface(u, save=True, n=n)
+            plot_surface(surface, n)
         if save_motif:
-            save_image(u, calcul_trajectoires(rayons, u, A, B, n*dt), n)
-        surface_simple(u, n*dt, A, B)
+            save_image(surface, calcul_trajectoires(rayons, surface, A, B, n*dt), n)
+        genere_surface(surface, n*dt, A, B)

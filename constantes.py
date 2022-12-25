@@ -27,6 +27,15 @@ dy = Ly/Ny
 vals_x = np.array([i*dx for i in range(Nx)])
 vals_y = np.array([j*dy for j in range(Ny)])
 
+# Discrétisation de l'espace dans le domaine de Fourier
+dkx = 2*np.pi/Lx
+dky = 2*np.pi/Ly
+
+
+vecteurs_k = np.zeros((Nx, Ny, 2))
+for i in range(Nx):
+    for j in range(Ny):
+        vecteurs_k[i, j] = np.array([(i-Nx/2)*dkx, (j-Ny/2)*dky])
 
 # Profondeur d'eau
 h = 3
@@ -39,15 +48,6 @@ else:
 
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
-
-dkx = 2*np.pi/Lx
-dky = 2*np.pi/Ly
-
-
-vecteurs_k = np.zeros((Nx, Ny, 2))
-for i in range(Nx):
-    for j in range(Ny):
-        vecteurs_k[i, j] = np.array([(i-Nx/2)*dkx, (j-Ny/2)*dky])
 
 
 # Facteur nécessaire pour changer de variables pour la FFT

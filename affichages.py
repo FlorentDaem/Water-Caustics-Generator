@@ -42,7 +42,7 @@ def affiche_rayons(trajectoires, surface, save=False):
         plt.savefig("rayons.pdf")
 
 
-def plot_surface(surface, save=False, n=None, fact=1):
+def plot_surface(surface, n, fact=1):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.set_xlim(-Lx/2*0, Lx/2*2)
@@ -53,9 +53,8 @@ def plot_surface(surface, save=False, n=None, fact=1):
     ax.set_zlabel("Z")
     ax.plot_surface(grille_X, grille_Y, (surface-h)*fact + h, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
-    if save:
-        fig.savefig(f"Frames/frame{n}.png")
-        plt.close(fig)
+    fig.savefig(f"Frames/frame{n}.png")
+    plt.close(fig)
 
 
 def calcul_motifs(trajectoires):
