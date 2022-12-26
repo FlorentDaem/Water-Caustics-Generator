@@ -119,7 +119,7 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'
         Coordonnées du point d'intersection
     """
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
-        rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz, xtol=dx)
+        rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz)
     s_intersection = recherche_zero.root
     I = point_rayon(rayon, s_intersection)
     return I
