@@ -166,7 +166,27 @@ def calcul_trajectoires(rayons, surface, A, B, t):
 
 
 def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=0.001, l=0.01):
-    "Calcule le spectre de vagues de Phillips."
+    """
+    Calcule le spectre de vagues de Phillips.
+
+    Parameters
+    ----------
+    kx : float
+        Composante x du vecteur d'onde.py
+    ky : float
+        Composante y du vecteur d'onde
+    V : array 2D, optional
+        Vecteur vitesse du vent, by default np.array([1, 0])
+    A : float, optional
+        Amplitude du spectre, by default 0.001
+    l : float, optional
+        Distance caractéristique d'aténuation, by default 0.01
+
+    Returns
+    -------
+    float
+        Renvoie la valeur du spectre de vagues de Phillips en (kx, ky)
+    """
 
     k = np.array([kx, ky])
     V_norm = np.linalg.norm(V)
@@ -189,7 +209,25 @@ def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=0.001, l=0.01):
 
 
 def random_h0(kx, ky, Ph, V):
-    "Calcule une surface initiale aléatoire de vagues dans le domaine de Fourier."
+    """
+    Calcule une surface initiale aléatoire de vagues dans le domaine de Fourier.
+
+    Parameters
+    ----------
+    kx : float
+        Composante x du vecteur d'onde
+    ky : float
+        Composante y du vecteur d'onde
+    Ph : fonction
+        Spectre utilisé
+    V : array 2D
+        Vitesse du vent
+
+    Returns
+    -------
+    float
+        Renvoie une valeur du spectre Ph en (kx, ky) avec un bruit gaussien
+    """
     e_r = rd.gauss(0, 1)
     e_i = rd.gauss(0, 1)
     return 1/np.sqrt(2) * (e_r + 1j*e_i) * np.sqrt(Ph(kx, ky))
@@ -200,10 +238,26 @@ def random_h0(kx, ky, Ph, V):
 
 
 def omega(kx, ky):
+    """
+    Relation de dispersion.
+
+    Parameters
+    ----------
+    kx : float
+        Composante x du vecteur d'onde
+    ky : float
+        Composante y du vecteur d'onde
+
+    Returns
+    -------
+    float
+        Calcule la valeur de la pulsation en (kx, ky)
+    """
     k = np.sqrt(kx**2 + ky**2)
     return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
 
 
+# Calcule et enregistre les valeurs de la pulsation
 OMEGA = np.zeros((Nx, Ny))
 for i in range(Nx):
     for j in range(Ny):
@@ -213,6 +267,9 @@ for i in range(Nx):
         OMEGA[i, j] = omega(kx, ky)
         if OMEGA[i, j] == 0:
             OMEGA[i, j] = 1e-5
+
+
+## Calcul des vecteurs normaux avec Fourier
 
 def vecteurs_normaux_avec_fourier(A, B, t):
     grad_x = np.real(np.fft.ifft(1j*vecteurs_k[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1)))

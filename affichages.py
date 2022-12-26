@@ -39,7 +39,7 @@ def affiche_rayons(trajectoires, surface, save=False):
     plt.xlim(-Lx/2*0, Lx/2*2)
     plt.ylim(0, Lz)
     if save:
-        plt.savefig("rayons.pdf")
+        plt.savefig("images/rayons.pdf")
 
 
 def plot_surface(surface, n, fact=1):
@@ -53,7 +53,7 @@ def plot_surface(surface, n, fact=1):
     ax.set_zlabel("Z")
     ax.plot_surface(grille_X, grille_Y, (surface-h)*fact + h, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
-    fig.savefig(f"Frames/frame{n}.png")
+    fig.savefig(f"frames/frame{n}.png")
     plt.close(fig)
 
 
@@ -76,6 +76,19 @@ def calcul_motifs(trajectoires):
 
 
 def motif_to_alpha(motif):
+    """
+    Convertion des valeurs de motif en alpha.
+
+    Parameters
+    ----------
+    motif : array 2D
+        Grille de valeurs de luminosité
+
+    Returns
+    -------
+    array 2D
+        Image avec valeurs de alpha
+    """
     image = np.zeros((Nx, Ny, 4))
     for i in range(Nx):
         for j in range(Ny):
@@ -91,5 +104,5 @@ def save_image(surface, trajectoires, n):
     motif = np.sqrt(motif)
 
     image = motif_to_alpha(motif)
-    plt.imsave(f"Frames/frame {n} image.png", image)
+    plt.imsave(f"frames/frame {n} image.png", image)
 

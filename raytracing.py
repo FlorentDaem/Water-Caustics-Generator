@@ -84,6 +84,19 @@ def reflect(v, n):
 
 
 def cos_theta_refract(cos_theta1):
+    """
+    Calcul de l'angle de réfraction en fonction de l'angle d'incidence.
+
+    Parameters
+    ----------
+    cos_theta1 : float
+        Angle d'incidence
+
+    Returns
+    -------
+    float
+        Angle de réfraction
+    """
     return np.sqrt(1-(n1/n2)**2 * (1-cos_theta1**2))
 
 
