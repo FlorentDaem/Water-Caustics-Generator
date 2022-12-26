@@ -97,7 +97,7 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
     return np.dot(n, I-P)
 
 
-def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='sol'):
+def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'):
     """
     Renvoie le point d'intersection du rayon avec l'interface.
     On fait une recherche de zéro de la fonction test_intersection (en fonction de s).
@@ -119,7 +119,7 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
         Coordonnées du point d'intersection
     """
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
-        rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz)
+        rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz, xtol=dx)
     s_intersection = recherche_zero.root
     I = point_rayon(rayon, s_intersection)
     return I
@@ -157,29 +157,22 @@ def calcul_trajectoires(rayons, surface, A, B, t):
         for j in range(Ny-1):
             rayon = rayons[i][j]
             L, u, lum = rayon
-            I = find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='surface')
+            I = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='surface')
 
             i, j = indices_du_point(I)
             n = vecteurs_normaux[i, j]
 
             v = refract(u, n)
 
-            R = intensitee_refract(u,n)
-            # print(R)
+            R = coeff_reflection(u, n)
             T = 1-R
 
             rayon = (I, v, T*lum)
 
-            S = find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection, intersection='sol')
+            S = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol')
 
             trajectoires.append([L, I, S, lum])
     return trajectoires
-
-
-
-
-    
-
 
 
 

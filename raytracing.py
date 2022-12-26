@@ -142,7 +142,7 @@ def point_rayon(rayon, s):
     return P + s*vec
 
 
-def intensitee_refract(ri, n):
+def coeff_reflection(ri, n):
     """
     Renvoie le coefficient de réflection du rayon incident ri réfléchi par la surface de normale n.
 
