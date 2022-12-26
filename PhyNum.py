@@ -86,11 +86,11 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
     I = point_rayon(rayon, s)
     i, j = indices_du_point(I)
 
-    if interface == 'sol':
+    if interface == "sol":
         P = np.zeros(3)
         n = np.array([0, 0, 1])
     
-    elif interface == 'surface':
+    elif interface == "surface":
         P = np.array([i*dx, j*dx, surface[i, j]])
         n = vecteurs_normaux[i, j]
     
@@ -128,8 +128,28 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, test_intersection,
 
 
 def calcul_trajectoires(rayons, surface, A, B, t):
-    '''Renvoie les trajectoires de chaque rayon. C'est à dire l'ensemble de trois points (L, I, S),
-    où L est le point de départ, I l'intersection avec l'eau, S l'intersection avec le sol.'''
+    """
+    Renvoie les trajectoires de chaque rayon. C'est à dire l'ensemble de trois points (L, I, S),
+    où L est le point de départ, I l'intersection avec l'eau, S l'intersection avec le sol.
+
+    Parameters
+    ----------
+    rayons : _type_
+        _description_
+    surface : _type_
+        _description_
+    A : _type_
+        _description_
+    B : _type_
+        _description_
+    t : _type_
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
     trajectoires = []
     # vecteurs_normaux = vecteurs_normaux_avec_fourier(A, B, t)
     vecteurs_normaux = vecteurs_de_surface(surface)
@@ -291,8 +311,9 @@ def gradient_surface(A, B, t):
     return grad
 
 def surface_fourier(A, B, t):
-    return  Nx*Ny*(A[:, :]*np.exp(
-        1j*(- OMEGA[:, :]*t)) + B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t)))
+    onde_plus = B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t))
+    onde_moins = A[:, :]*np.exp(1j*(- OMEGA[:, :]*t))
+    return  Nx*Ny*(onde_moins + onde_plus)
 
 def genere_surface(surface, t, A, B):
     surface[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :]))
@@ -313,11 +334,12 @@ def genere_animation_simple(surface, h0, rayons, save_surface=True, save_motif=F
         for j in range(Ny):
 
             A[i, j] = h0[i, j]
-            B[i, j] = np.conjugate(h0[-i+(Nx-1)*0, -j+(Nx-1)*0])
+            B[i, j] = np.conjugate(h0[-i, -j])
 
     for n in tqdm(range(frames), desc="frame"):
         if save_surface:
-            plot_surface(surface, n)
+            save_frame_surface(surface, n)
         if save_motif:
-            save_image(surface, calcul_trajectoires(rayons, surface, A, B, n*dt), n)
+            trajectoires = calcul_trajectoires(rayons, surface, A, B, n*dt)
+            save_image(surface, trajectoires, n)
         genere_surface(surface, n*dt, A, B)
