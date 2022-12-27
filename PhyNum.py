@@ -285,8 +285,8 @@ for i in range(Nx):
 ## Calcul des vecteurs normaux avec Fourier
 
 def vecteurs_normaux_avec_fourier(A, B, t):
-    grad_x = np.real(np.fft.ifft(1j*vecteurs_k[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1)))
-    grad_y = np.real(np.fft.ifft(1j*vecteurs_k[:,:,1]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=0)))
+    grad_x = np.real(np.fft.ifft(1j*vecteurs_k[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1, norm="forward"), norm="forward"))
+    grad_y = np.real(np.fft.ifft(1j*vecteurs_k[:,:,1]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=0, norm="forward"), norm="forward"))
     norms = np.zeros((Nx, Ny, 3))
     for i in range(Nx):
         for j in range(Ny):
@@ -295,8 +295,8 @@ def vecteurs_normaux_avec_fourier(A, B, t):
     return norms
 
 def gradient_surface(A, B, t):
-    grad_x = np.real(np.fft.ifft(1j*vecteurs_k[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1)))
-    grad_y = np.real(np.fft.ifft(1j*vecteurs_k[:,:,1]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=0)))
+    grad_x = np.real(np.fft.ifft(1j*vecteurs_k[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1, norm="forward"), norm="forward"))
+    grad_y = np.real(np.fft.ifft(1j*vecteurs_k[:,:,1]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=0, norm="forward"), norm="forward"))
     grad = np.zeros((Nx, Ny, 3))
     for i in range(Nx):
         for j in range(Ny):
@@ -306,10 +306,10 @@ def gradient_surface(A, B, t):
 def surface_fourier(A, B, t):
     onde_plus = B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t))
     onde_moins = A[:, :]*np.exp(1j*(- OMEGA[:, :]*t))
-    return  Nx*Ny*(onde_moins + onde_plus)
+    return  (onde_moins + onde_plus)
 
 def genere_surface(surface, t, A, B):
-    surface[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :]))
+    surface[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :], norm="forward"))
 
 
 frames = 25
