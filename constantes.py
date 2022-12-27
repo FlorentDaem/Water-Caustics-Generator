@@ -17,7 +17,7 @@ kc = 500
 
 # Discrétisation de l'espace
 Lx = 4
-Nx = 2**9
+Nx = 2**5
 dx = Lx/Nx
 
 Ly = Lx
@@ -36,6 +36,11 @@ vecteurs_k = np.zeros((Nx, Ny, 2))
 for i in range(Nx):
     for j in range(Ny):
         vecteurs_k[i, j] = np.array([(i-Nx/2)*dkx, (j-Ny/2)*dky])
+
+facteur_grad = np.zeros((Nx, Ny, 2), dtype=complex)
+for i in range(1, Nx-1):
+    for j in range(1, Ny-1):
+        facteur_grad[i, j] = 1j * np.array([(i-Nx/2)*dkx, (j-Ny/2)*dky])
 
 # Profondeur d'eau
 h = 3
