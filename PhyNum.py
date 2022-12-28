@@ -266,7 +266,7 @@ def omega(kx, ky):
         Calcule la valeur de la pulsation en (kx, ky)
     """
     k = np.sqrt(kx**2 + ky**2)
-    return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*h))
+    return np.sqrt(k*g*(1+(k/kc)**2)*np.tanh(k*H))
 
 
 # Calcule et enregistre les valeurs de la pulsation
@@ -289,7 +289,7 @@ def surface_fourier(A, B, t):
     return  (onde_moins + onde_plus)
 
 def genere_surface(surface, t, A, B):
-    surface[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :], norm="forward"))
+    surface[:, :] = H + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :], norm="forward"))
 
 
 

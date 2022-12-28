@@ -37,12 +37,12 @@ vecteurs_ky = np.array([(j-Ny/2)*dky for j in range(Ny)])
 
 
 # Profondeur d'eau
-h = 3
+H = 3
 
-if h < Lx:
+if H < Lx:
     Lz = Lx
 else:
-    Lz = 2*h
+    Lz = 2*H
 
 
 # Définition d'un meshgrid

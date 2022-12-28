@@ -51,7 +51,7 @@ def plot_surface(surface, fact=1):
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
-    ax.plot_surface(grille_X, grille_Y, (surface-h)*fact + h, cmap="Blues",
+    ax.plot_surface(grille_X, grille_Y, (surface-H)*fact + H, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
     plt.close(fig)
 
@@ -65,7 +65,7 @@ def save_frame_surface(surface, n, fact=1):
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
-    ax.plot_surface(grille_X, grille_Y, (surface-h)*fact + h, cmap="Blues",
+    ax.plot_surface(grille_X, grille_Y, (surface-H)*fact + H, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
     fig.savefig(f"frames/frame{n}.png")
     plt.close(fig)
