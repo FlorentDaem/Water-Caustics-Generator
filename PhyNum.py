@@ -151,7 +151,6 @@ def calcul_trajectoires(rayons, surface, A, B, t):
         _description_
     """
     trajectoires = []
-    # vecteurs_normaux = vecteurs_normaux_avec_fourier(A, B, t)
     vecteurs_normaux = vecteurs_de_surface(surface)
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
         for j in range(Ny-1):
@@ -282,26 +281,7 @@ for i in range(Nx):
             OMEGA[i, j] = 1e-5
 
 
-## Calcul des vecteurs normaux avec Fourier
-
-def vecteurs_normaux_avec_fourier(A, B, t):
-    grad_x = np.real(np.fft.ifft(facteur_grad[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1, norm="forward"), axis=0, norm="forward"))
-    grad_y = np.real(np.fft.ifft(facteur_grad[:,:,1]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=0, norm="forward"), axis=1, norm="forward"))
-    norms = np.zeros((Nx, Ny, 3))
-    for i in range(Nx):
-        for j in range(Ny):
-            norms[i,j] = np.array([-grad_x[i,j], -grad_y[i,j], 1])/np.sqrt(1+grad_x[i,j]**2+grad_y[i,j]**2)
-
-    return norms
-
-def gradient_surface(A, B, t):
-    grad_x = np.real(np.fft.ifft(facteur_grad[:,:,0]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=1, norm="forward"), axis=0, norm="forward"))
-    grad_y = np.real(np.fft.ifft(facteur_grad[:,:,1]*np.fft.ifft(surface_fourier(A, B, t)[:,:], axis=0, norm="forward"), axis=1, norm="forward"))
-    grad = np.zeros((Nx, Ny, 3))
-    for i in range(Nx):
-        for j in range(Ny):
-            grad[i,j] = np.array([grad_x[i,j], grad_y[i,j], 0])
-    return grad
+## Calcul de la surface d'eau
 
 def surface_fourier(A, B, t):
     onde_plus = B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t))
@@ -311,6 +291,9 @@ def surface_fourier(A, B, t):
 def genere_surface(surface, t, A, B):
     surface[:, :] = h + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :], norm="forward"))
 
+
+
+## Animation
 
 frames = 25
 dt = 1/10
