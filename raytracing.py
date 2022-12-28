@@ -175,3 +175,17 @@ class Rayon():
         self.lum_r = None
         
         self.point_sol = None
+
+    def point_rayon(self, depart, s):
+        if depart=="source":
+            return self.point_source + s*self.vecteur_direction_i
+        if depart=="interface":
+            return self.point_source + s*self.vecteur_direction_r
+    
+    def refract(vecteur_normal):
+        self.vecteur_direction_r = refract(vecteur_direction_i, vecteur_normal)
+        self.lum_r = self.lum * (1 - coeff_reflection(vecteur_direction_i, vecteur_normal))
+    
+    
+    
+
