@@ -24,15 +24,19 @@ def indices_du_point(P):
     return (i, j)
 
 
-def affiche_rayons(trajectoires, surface, save=False):
+def affiche_rayons(rayons, surface, save=False):
     '''Dessine les rayons et l'eau dans le plan y=0.'''
-    for trajectoire in trajectoires:
-        point_source, point_interface, point_sol, lum = trajectoire
-        iL, jL = indices_du_point(point_source)
-        # iS, jS = indices_du_point(point_sol)
+    for i in range(Nx-1):
+        for j in range(Ny-1):
+            rayon = rayons[i][j]
+            point_source = rayon.point_source
+            point_interface = rayon.point_interface
+            point_sol = rayon.point_sol
+            iL, jL = indices_du_point(rayon.point_source)
+            # iS, jS = indices_du_point(point_sol)
 
-        if jL == 0:
-            plt.plot([point_source[0], point_interface[0], point_sol[0]], [point_source[2], point_interface[2], point_sol[2]], color='green')
+            if jL == 0:
+                plt.plot([point_source[0], point_interface[0], point_sol[0]], [point_source[2], point_interface[2], point_sol[2]], color='red')
 
     plt.plot(vals_x, surface[:, 0])
 
@@ -71,15 +75,17 @@ def save_frame_surface(surface, n, fact=1):
     plt.close(fig)
 
 
-def calcul_motifs(trajectoires):
+def calcul_motifs(rayons):
     motif = np.zeros((Nx, Ny))
 
-    for trajectoire in trajectoires:
-        point_source, point_interface, point_sol, lum = trajectoire
-        i_S, j_S = indices_du_point(point_sol)
+    for i in range(Nx-1):
+        for j in range(Ny-1):
+            rayon = rayons[i][j]
+            point_sol = rayon.point_sol
+            i_S, j_S = indices_du_point(point_sol)
 
-        if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
-            motif[i_S, j_S] += lum
+            if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
+                motif[i_S, j_S] += rayon.lum_r
 
     max_I = motif.max()
     # règle l'intensité de la lumière en fonction du nombre d'impacts de rayons
@@ -110,8 +116,8 @@ def motif_to_alpha(motif):
     return image
 
 
-def save_image(surface, trajectoires, n):
-    motif = calcul_motifs(trajectoires)
+def save_image(surface, rayons, n):
+    motif = calcul_motifs(rayons)
 
     motif = np.sqrt(motif)
 

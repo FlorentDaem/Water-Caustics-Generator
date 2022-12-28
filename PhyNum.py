@@ -49,7 +49,6 @@ def calcul_trajectoires(rayons, surface, A, B, t):
     _type_
         _description_
     """
-    trajectoires = []
     vecteurs_normaux = vecteurs_de_surface(surface)
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
         for j in range(Ny-1):
@@ -69,8 +68,6 @@ def calcul_trajectoires(rayons, surface, A, B, t):
 
             point_source = rayon.point_source
             lum = rayon.lum_r
-            trajectoires.append([point_source, point_interface, point_sol, lum])
-    return trajectoires
 
 
 
@@ -216,5 +213,5 @@ def genere_animation_simple(surface, h0, rayons, save_surface=True, save_motif=F
             save_frame_surface(surface, n)
         if save_motif:
             trajectoires = calcul_trajectoires(rayons, surface, A, B, n*dt)
-            save_image(surface, trajectoires, n)
+            save_image(surface, rayons, n)
         genere_surface(surface, n*dt, A, B)
