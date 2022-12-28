@@ -6,7 +6,7 @@
 
 from PIL import Image
 import numpy as np
-import scipy.optimize
+
 from tqdm import tqdm
 from mpl_toolkits.mplot3d import Axes3D
 import random as rd
@@ -22,118 +22,6 @@ from affichages import *
 
 
 ## Fonctions
-
-
-
-def vecteurs_de_surface(surface):
-    """
-    Renvoie les vecteurs normaux à la surface en calculant des produits vectoriels.
-
-    Parameters
-    ----------
-    surface : Array (2D)
-        Hauteur de la surface aux points (i,j)
-
-    Returns
-    -------
-    Array (2D)
-        Tableau des vecteurs normaux à la surface aux points (i,j)
-    """
-    vecteurs_normaux =[]
-    for i in range(Nx-1):
-        vecteurs_normaux.append([])
-        for j in range(Ny-1):
-            A = np.array([i*dx, j*dy, surface[i, j]])
-            B = np.array([(i+1)*dx, j*dy, surface[i+1, j]])
-            AB = vec(A, B)
-            C = np.array([i*dx, (j+1)*dy, surface[i, j+1]])
-            AC = vec(A, C)
-
-            vecteur_normal = np.cross(AB, AC)
-            vecteur_normal = 1/np.linalg.norm(vecteur_normal)*vecteur_normal
-            vecteurs_normaux[i].append(vecteur_normal)
-    return np.array(vecteurs_normaux)
-
-
-
-
-
-
-
-def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
-    """
-    Renvoie 0 si le rayon à la distance s appartient à l'interface.
-
-    Parameters
-    ----------
-    rayon : Array
-        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
-    surface : Array (2D)
-        Hauteur de la surface aux points (i,j)
-    s : float
-        Distance
-    vecteurs_normaux : Array (2D)
-        Tableau des vecteurs normaux à la surface aux points (i,j)
-    interface : str
-        Nom de l'interface
-
-    Returns
-    -------
-    float
-        Nombre égal à 0 si et seulement si s*vec appartient à l'interface.
-    """
-
-    if interface == "sol":
-        depart = "interface"
-    if interface == "surface":
-        depart = "source"
-
-    point_interface = rayon.point_rayon(depart, s)
-    i, j = indices_du_point(point_interface)
-
-    if interface == "sol":
-        P = np.zeros(3)
-        vecteur_normal = np.array([0, 0, 1])
-    
-    elif interface == "surface":
-        P = np.array([i*dx, j*dx, surface[i, j]])
-        vecteur_normal = vecteurs_normaux[i, j]
-    
-    return np.dot(vecteur_normal, vec(P, point_interface))
-
-
-def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'):
-    """
-    Renvoie le point d'intersection du rayon avec l'interface.
-    On fait une recherche de zéro de la fonction test_intersection (en fonction de s).
-
-    Parameters
-    ----------
-    rayon : Array
-        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
-    surface : Array (2D)
-        Hauteur de la surface aux points (i,j)
-    vecteurs_normaux : Array (2D)
-        Tableau des vecteurs normaux à la surface aux points (i,j)
-    interface : str
-        Nom de l'interface
-
-    Returns
-    -------
-    Array
-        Coordonnées du point d'intersection
-    """
-    recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
-        rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz)
-    s_intersection = recherche_zero.root
-
-    if intersection=="sol":
-        depart = "interface"
-    if intersection=="surface":
-        depart = "source"
-    point_interface = rayon.point_rayon(depart, s_intersection)
-
-    return point_interface
 
 
 
