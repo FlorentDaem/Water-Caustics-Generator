@@ -186,7 +186,18 @@ def coeff_reflection(vecteur_direction_i, vecteur_normal):
 
 ###
 
-def vecteurs_de_surface(surface):
+def vecteur_normal_ij(surface, i, j):
+    A = np.array([i*dx, j*dy, surface[i, j]])
+    B = np.array([(i+1)*dx, j*dy, surface[i+1, j]])
+    AB = vec(A, B)
+    C = np.array([i*dx, (j+1)*dy, surface[i, j+1]])
+    AC = vec(A, C)
+
+    vecteur_normal = np.cross(AB, AC)
+    vecteur_normal = 1/np.linalg.norm(vecteur_normal)*vecteur_normal
+    return vecteur_normal
+
+def vecteurs_normaux_surface(surface):
     """
     Renvoie les vecteurs normaux à la surface en calculant des produits vectoriels.
 
@@ -204,14 +215,7 @@ def vecteurs_de_surface(surface):
     for i in range(Nx-1):
         vecteurs_normaux.append([])
         for j in range(Ny-1):
-            A = np.array([i*dx, j*dy, surface[i, j]])
-            B = np.array([(i+1)*dx, j*dy, surface[i+1, j]])
-            AB = vec(A, B)
-            C = np.array([i*dx, (j+1)*dy, surface[i, j+1]])
-            AC = vec(A, C)
-
-            vecteur_normal = np.cross(AB, AC)
-            vecteur_normal = 1/np.linalg.norm(vecteur_normal)*vecteur_normal
+            vecteur_normal = vecteur_normal_ij(surface, i, j)
             vecteurs_normaux[i].append(vecteur_normal)
     return np.array(vecteurs_normaux)
 

@@ -49,7 +49,7 @@ def calcul_trajectoires(rayons, surface, A, B, t):
     _type_
         _description_
     """
-    vecteurs_normaux = vecteurs_de_surface(surface)
+    vecteurs_normaux = vecteurs_normaux_surface(surface)
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
         for j in range(Ny-1):
 
