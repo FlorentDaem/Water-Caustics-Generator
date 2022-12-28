@@ -83,7 +83,12 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
         Nombre égal à 0 si et seulement si s*vec appartient à l'interface.
     """
 
-    point_interface = point_rayon(rayon, s)
+    if interface == "sol":
+        depart = "interface"
+    if interface == "surface":
+        depart = "source"
+
+    point_interface = rayon.point_rayon(depart, s)
     i, j = indices_du_point(point_interface)
 
     if interface == "sol":
@@ -121,7 +126,13 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
         rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz)
     s_intersection = recherche_zero.root
-    point_interface = point_rayon(rayon, s_intersection)
+
+    if intersection=="sol":
+        depart = "interface"
+    if intersection=="surface":
+        depart = "source"
+    point_interface = rayon.point_rayon(depart, s_intersection)
+
     return point_interface
 
 
@@ -154,22 +165,23 @@ def calcul_trajectoires(rayons, surface, A, B, t):
     vecteurs_normaux = vecteurs_de_surface(surface)
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
         for j in range(Ny-1):
+
             rayon = rayons[i][j]
-            point_source, vecteur_direction_i, lum = rayon
+
             point_interface = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='surface')
+
+            rayon.point_interface = point_interface
 
             i, j = indices_du_point(point_interface)
             vecteur_normal = vecteurs_normaux[i, j]
 
-            vecteur_direction_r = refract(vecteur_direction_i, vecteur_normal)
-
-            R = coeff_reflection(vecteur_direction_i, vecteur_normal)
-            T = 1-R
-
-            rayon = (point_interface, vecteur_direction_r, T*lum)
+            rayon.refract(vecteur_normal)
 
             point_sol = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol')
+            rayon.point_sol = point_sol
 
+            point_source = rayon.point_source
+            lum = rayon.lum_r
             trajectoires.append([point_source, point_interface, point_sol, lum])
     return trajectoires
 

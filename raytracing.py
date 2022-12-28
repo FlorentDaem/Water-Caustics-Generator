@@ -165,9 +165,9 @@ def coeff_reflection(vecteur_direction_i, vecteur_normal):
 
 
 class Rayon():
-    def __init__(self, point_source, vecteur_direction, lum):
+    def __init__(self, point_source, vecteur_direction_i, lum):
         self.point_source = point_source
-        self.vecteur_direction_i = vecteur_direction
+        self.vecteur_direction_i = vecteur_direction_i
         self.lum = lum
 
         self.point_interface = None
@@ -182,10 +182,10 @@ class Rayon():
         if depart=="interface":
             return self.point_source + s*self.vecteur_direction_r
     
-    def refract(vecteur_normal):
-        self.vecteur_direction_r = refract(vecteur_direction_i, vecteur_normal)
-        self.lum_r = self.lum * (1 - coeff_reflection(vecteur_direction_i, vecteur_normal))
+    def refract(self, vecteur_normal):
+        self.vecteur_direction_r = refract(self.vecteur_direction_i, vecteur_normal)
+        self.lum_r = self.lum * (1 - coeff_reflection(self.vecteur_direction_i, vecteur_normal))
     
-    
+
     
 
