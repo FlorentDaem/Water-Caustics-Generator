@@ -27,12 +27,12 @@ def indices_du_point(P):
 def affiche_rayons(trajectoires, surface, save=False):
     '''Dessine les rayons et l'eau dans le plan y=0.'''
     for trajectoire in trajectoires:
-        L, I, S, lum = trajectoire
-        iL, jL = indices_du_point(L)
-        # iS, jS = indices_du_point(S)
+        point_source, point_interface, point_sol, lum = trajectoire
+        iL, jL = indices_du_point(point_source)
+        # iS, jS = indices_du_point(point_sol)
 
         if jL == 0:
-            plt.plot([L[0], I[0], S[0]], [L[2], I[2], S[2]], color='green')
+            plt.plot([point_source[0], point_interface[0], point_sol[0]], [point_source[2], point_interface[2], point_sol[2]], color='green')
 
     plt.plot(vals_x, surface[:, 0])
 
@@ -75,8 +75,8 @@ def calcul_motifs(trajectoires):
     motif = np.zeros((Nx, Ny))
 
     for trajectoire in trajectoires:
-        L, I, S, lum = trajectoire
-        i_S, j_S = indices_du_point(S)
+        point_source, point_interface, point_sol, lum = trajectoire
+        i_S, j_S = indices_du_point(point_sol)
 
         if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
             motif[i_S, j_S] += lum

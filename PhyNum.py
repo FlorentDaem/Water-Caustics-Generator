@@ -83,8 +83,8 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
         Nombre égal à 0 si et seulement si s*vec appartient à l'interface.
     """
 
-    I = point_rayon(rayon, s)
-    i, j = indices_du_point(I)
+    point_interface = point_rayon(rayon, s)
+    i, j = indices_du_point(point_interface)
 
     if interface == "sol":
         P = np.zeros(3)
@@ -94,7 +94,7 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
         P = np.array([i*dx, j*dx, surface[i, j]])
         n = vecteurs_normaux[i, j]
     
-    return np.dot(n, I-P)
+    return np.dot(n, point_interface-P)
 
 
 def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'):
@@ -121,16 +121,16 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
         rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz)
     s_intersection = recherche_zero.root
-    I = point_rayon(rayon, s_intersection)
-    return I
+    point_interface = point_rayon(rayon, s_intersection)
+    return point_interface
 
 
 
 
 def calcul_trajectoires(rayons, surface, A, B, t):
     """
-    Renvoie les trajectoires de chaque rayon. C'est à dire l'ensemble de trois points (L, I, S),
-    où L est le point de départ, I l'intersection avec l'eau, S l'intersection avec le sol.
+    Renvoie les trajectoires de chaque rayon. C'est à dire l'ensemble de trois points (point_source, point_interface, point_sol),
+    où point_source est le point de départ, point_interface l'intersection avec l'eau, point_sol l'intersection avec le sol.
 
     Parameters
     ----------
@@ -155,10 +155,10 @@ def calcul_trajectoires(rayons, surface, A, B, t):
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
         for j in range(Ny-1):
             rayon = rayons[i][j]
-            L, u, lum = rayon
-            I = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='surface')
+            point_source, u, lum = rayon
+            point_interface = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='surface')
 
-            i, j = indices_du_point(I)
+            i, j = indices_du_point(point_interface)
             n = vecteurs_normaux[i, j]
 
             v = refract(u, n)
@@ -166,11 +166,11 @@ def calcul_trajectoires(rayons, surface, A, B, t):
             R = coeff_reflection(u, n)
             T = 1-R
 
-            rayon = (I, v, T*lum)
+            rayon = (point_interface, v, T*lum)
 
-            S = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol')
+            point_sol = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol')
 
-            trajectoires.append([L, I, S, lum])
+            trajectoires.append([point_source, point_interface, point_sol, lum])
     return trajectoires
 
 
