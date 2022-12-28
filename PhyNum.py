@@ -49,9 +49,9 @@ def vecteurs_de_surface(surface):
             C = np.array([i*dx, (j+1)*dy, surface[i, j+1]])
             AC = vec(A, C)
 
-            n = np.cross(AB, AC)
-            n = 1/np.linalg.norm(n)*n
-            vecteurs_normaux[i].append(n)
+            vecteur_normal = np.cross(AB, AC)
+            vecteur_normal = 1/np.linalg.norm(vecteur_normal)*vecteur_normal
+            vecteurs_normaux[i].append(vecteur_normal)
     return np.array(vecteurs_normaux)
 
 
@@ -88,13 +88,13 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
 
     if interface == "sol":
         P = np.zeros(3)
-        n = np.array([0, 0, 1])
+        vecteur_normal = np.array([0, 0, 1])
     
     elif interface == "surface":
         P = np.array([i*dx, j*dx, surface[i, j]])
-        n = vecteurs_normaux[i, j]
+        vecteur_normal = vecteurs_normaux[i, j]
     
-    return np.dot(n, point_interface-P)
+    return np.dot(vecteur_normal, point_interface-P)
 
 
 def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'):
@@ -155,18 +155,18 @@ def calcul_trajectoires(rayons, surface, A, B, t):
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
         for j in range(Ny-1):
             rayon = rayons[i][j]
-            point_source, u, lum = rayon
+            point_source, vecteur_direction_i, lum = rayon
             point_interface = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='surface')
 
             i, j = indices_du_point(point_interface)
-            n = vecteurs_normaux[i, j]
+            vecteur_normal = vecteurs_normaux[i, j]
 
-            v = refract(u, n)
+            vecteur_direction_r = refract(vecteur_direction_i, vecteur_normal)
 
-            R = coeff_reflection(u, n)
+            R = coeff_reflection(vecteur_direction_i, vecteur_normal)
             T = 1-R
 
-            rayon = (point_interface, v, T*lum)
+            rayon = (point_interface, vecteur_direction_r, T*lum)
 
             point_sol = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol')
 
