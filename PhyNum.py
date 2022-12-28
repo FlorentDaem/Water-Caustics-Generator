@@ -94,7 +94,7 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
         P = np.array([i*dx, j*dx, surface[i, j]])
         vecteur_normal = vecteurs_normaux[i, j]
     
-    return np.dot(vecteur_normal, point_interface-P)
+    return np.dot(vecteur_normal, vec(P, point_interface))
 
 
 def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'):
