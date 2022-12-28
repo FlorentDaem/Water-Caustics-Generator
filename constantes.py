@@ -17,7 +17,7 @@ kc = 500
 
 # Discrétisation de l'espace
 Lx = 4
-Nx = 2**9
+Nx = 2**8
 dx = Lx/Nx
 
 Ly = Lx

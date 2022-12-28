@@ -161,3 +161,17 @@ def coeff_reflection(vecteur_direction_i, vecteur_normal):
     theta_i = np.arccos(-np.dot(vecteur_direction_i, vecteur_normal))
     theta_r = np.arcsin(n1/n2*np.sin(theta_i))
     return 1/2*((np.sin(theta_r-theta_i)**2)/(np.sin(theta_i+theta_r)**2) + (np.tan(theta_r-theta_i)**2)/(np.tan(theta_i+theta_r)**2))
+
+
+
+class Rayon():
+    def __init__(self, point_source, vecteur_direction, lum):
+        self.point_source = point_source
+        self.vecteur_direction_i = vecteur_direction
+        self.lum = lum
+
+        self.point_interface = None
+        self.vecteur_direction_r = None
+        self.lum_r = None
+        
+        self.point_sol = None
