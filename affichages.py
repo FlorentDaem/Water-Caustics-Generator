@@ -78,10 +78,8 @@ def calcul_motifs(trajectoires):
         L, I, S, lum = trajectoire
         i_S, j_S = indices_du_point(S)
 
-        # if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
-        #     motif[i_S, j_S] += 1
-
-        motif[i_S % Nx, j_S % Ny] += lum
+        if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
+            motif[i_S, j_S] += lum
 
     max_I = motif.max()
     # règle l'intensité de la lumière en fonction du nombre d'impacts de rayons

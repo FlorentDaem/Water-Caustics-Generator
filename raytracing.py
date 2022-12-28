@@ -83,13 +83,13 @@ def reflect(v, n):
     return -symetrie(v, n)
 
 
-def cos_theta_refract(cos_theta1):
+def cos_theta_refract(cos_theta_i):
     """
     Calcul de l'angle de réfraction en fonction de l'angle d'incidence.
 
     Parameters
     ----------
-    cos_theta1 : float
+    cos_theta_i : float
         Angle d'incidence
 
     Returns
@@ -97,18 +97,18 @@ def cos_theta_refract(cos_theta1):
     float
         Angle de réfraction
     """
-    return np.sqrt(1-(n1/n2)**2 * (1-cos_theta1**2))
+    return np.sqrt(1-(n1/n2)**2 * (1-cos_theta_i**2))
 
 
-def refract(ri, n):
+def refract(vecteur_direction_i, vecteur_normal):
     """
-    Renvoie la direction du rayon ri une fois réfracté sur une surface de normale n.
+    Renvoie la direction du rayon vecteur_direction_i une fois réfracté sur une surface de normale vecteur_normal.
 
     Parameters
     ----------
-    ri : Array numpy
+    vecteur_direction_i : Array numpy
         Coordonnées du rayon initial
-    n : Array numpy
+    vecteur_normal : Array numpy
         Coordonnées du vecteur normal
 
     Returns
@@ -116,8 +116,8 @@ def refract(ri, n):
     Array numpy
         Coordonnées du rayon réfracté
     """
-    cos_theta1 = -np.dot(ri, n)
-    rr = n1/n2*ri + (n1/n2*cos_theta1 - cos_theta_refract(cos_theta1))*n
+    cos_theta_i = -np.dot(vecteur_direction_i, vecteur_normal)
+    rr = n1/n2*vecteur_direction_i + (n1/n2*cos_theta_i - cos_theta_refract(cos_theta_i))*vecteur_normal
     rr = 1/np.linalg.norm(rr)*rr
     return rr
 
@@ -142,15 +142,15 @@ def point_rayon(rayon, s):
     return P + s*vec
 
 
-def coeff_reflection(ri, n):
+def coeff_reflection(vecteur_direction_i, vecteur_normal):
     """
-    Renvoie le coefficient de réflection du rayon incident ri réfléchi par la surface de normale n.
+    Renvoie le coefficient de réflection du rayon incident vecteur_direction_i réfléchi par la surface de normale vecteur_normal.
 
     Parameters
     ----------
-    ri : Array numpy
+    vecteur_direction_i : Array numpy
         Coordonnées du rayon incident
-    n : Array numpy
+    vecteur_normal : Array numpy
         Coordonnées du vecteur normal
 
     Returns
@@ -158,6 +158,6 @@ def coeff_reflection(ri, n):
     float
         Coefficient de réflection
     """
-    theta_i = np.arccos(-np.dot(ri, n))
+    theta_i = np.arccos(-np.dot(vecteur_direction_i, vecteur_normal))
     theta_r = np.arcsin(n1/n2*np.sin(theta_i))
     return 1/2*((np.sin(theta_r-theta_i)**2)/(np.sin(theta_i+theta_r)**2) + (np.tan(theta_r-theta_i)**2)/(np.tan(theta_i+theta_r)**2))
