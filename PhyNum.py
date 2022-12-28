@@ -55,14 +55,14 @@ def calcul_trajectoires(rayons, surface, A, B, t):
 
             rayon = rayons[i][j]
 
-            rayon.find_point_intersection(rayon, surface, vecteurs_normaux, "surface")
+            rayon.find_point_intersection(rayon, surface, vecteurs_normaux, "source")
 
             i, j = indices_du_point(rayon.point_interface)
             vecteur_normal = vecteurs_normaux[i, j]
 
             rayon.refract(vecteur_normal)
 
-            rayon.find_point_intersection(rayon, surface, vecteurs_normaux, "sol")
+            rayon.find_point_intersection(rayon, surface, vecteurs_normaux, "surface")
 
 
 

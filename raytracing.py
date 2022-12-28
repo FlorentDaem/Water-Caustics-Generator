@@ -220,7 +220,7 @@ def vecteurs_normaux_surface(surface):
     return np.array(vecteurs_normaux)
 
 
-def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
+def test_intersection(rayon, surface, s, vecteurs_normaux, depart):
     """
     Renvoie 0 si le rayon à la distance s appartient à l'interface.
 
@@ -243,26 +243,21 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
         Nombre égal à 0 si et seulement si s*vec appartient à l'interface.
     """
 
-    if interface == "sol":
-        depart = "interface"
-    if interface == "surface":
-        depart = "source"
-
     point_interface = rayon.point_rayon(depart, s)
     i, j = indices_du_point(point_interface)
 
-    if interface == "sol":
+    if depart == "surface":
         P = np.zeros(3)
         vecteur_normal = np.array([0, 0, 1])
 
-    elif interface == "surface":
+    elif depart == "source":
         P = np.array([i*dx, j*dx, surface[i, j]])
         vecteur_normal = vecteurs_normaux[i, j]
 
     return np.dot(vecteur_normal, vec(P, point_interface))
 
 
-def find_point_intersection(rayon, surface, vecteurs_normaux, interface):
+def find_point_intersection(rayon, surface, vecteurs_normaux, depart):
     """
     Renvoie le point d'intersection du rayon avec l'interface.
     On fait une recherche de zéro de la fonction test_intersection (en fonction de s).
@@ -284,13 +279,9 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, interface):
         Coordonnées du point d'intersection
     """
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
-        rayon, surface, s, vecteurs_normaux, interface), x0=0, x1=Lz)
+        rayon, surface, s, vecteurs_normaux, depart), x0=0, x1=Lz)
     s_intersection = recherche_zero.root
 
-    if interface == "sol":
-        depart = "interface"
-    if interface == "surface":
-        depart = "source"
     point_interface = rayon.point_rayon(depart, s_intersection)
 
     return point_interface
@@ -318,17 +309,18 @@ class Rayon():
     def point_rayon(self, depart, s):
         if depart=="source":
             return self.point_source + s*self.vecteur_direction_i
-        if depart=="interface":
+        if depart=="surface":
             return self.point_source + s*self.vecteur_direction_r
     
     def refract(self, vecteur_normal):
         self.vecteur_direction_r = refract(self.vecteur_direction_i, vecteur_normal)
         self.lum_r = self.lum * (1 - coeff_reflection(self.vecteur_direction_i, vecteur_normal))
     
-    def find_point_intersection(self, rayon, surface, vecteurs_normaux, interface):
-        if interface == "sol":
-            self.point_sol = find_point_intersection(rayon, surface, vecteurs_normaux, interface)
-        if interface == "surface":
-            self.point_interface = find_point_intersection(rayon, surface, vecteurs_normaux, interface)
+    def find_point_intersection(self, rayon, surface, vecteurs_normaux, depart):
+        point_intersection = find_point_intersection(rayon, surface, vecteurs_normaux, depart)
+        if depart == "surface":
+            self.point_sol = point_intersection
+        if depart == "source":
+            self.point_interface = point_intersection
     
 
