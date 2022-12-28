@@ -119,8 +119,7 @@ def motif_to_alpha(motif):
 def save_image(surface, rayons, n):
     motif = calcul_motifs(rayons)
 
-    motif = np.sqrt(motif)
-
     image = motif_to_alpha(motif)
     plt.imsave(f"frames/frame {n} image.png", image)
+    plt.close()
 

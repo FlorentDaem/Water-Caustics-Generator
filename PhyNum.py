@@ -187,7 +187,7 @@ def genere_surface(surface, t, A, B):
 ## Animation
 
 frames = 25
-dt = 1/10
+dt = 1/20
 
 
 
@@ -207,6 +207,6 @@ def genere_animation_simple(surface, h0, rayons, save_surface=True, save_motif=F
         if save_surface:
             save_frame_surface(surface, n)
         if save_motif:
-            trajectoires = calcul_trajectoires(rayons, surface, A, B, n*dt)
+            calcul_trajectoires(rayons, surface, A, B, n*dt)
             save_image(surface, rayons, n)
         genere_surface(surface, n*dt, A, B)

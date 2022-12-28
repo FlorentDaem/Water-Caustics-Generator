@@ -16,8 +16,8 @@ g = 9.81
 kc = 500
 
 # Discrétisation de l'espace
-Lx = 4
-Nx = 2**9
+Lx = 1
+Nx = 2**8
 dx = Lx/Nx
 
 Ly = Lx
@@ -37,7 +37,7 @@ vecteurs_ky = np.array([(j-Ny/2)*dky for j in range(Ny)])
 
 
 # Profondeur d'eau
-H = 3
+H = 2
 
 if H < Lx:
     Lz = Lx
