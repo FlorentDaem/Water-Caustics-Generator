@@ -56,17 +56,16 @@ def calcul_trajectoires(rayons, surface, A, B, t):
 
             rayon = rayons[i][j]
 
-            point_interface = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='surface')
+            rayon.find_point_intersection(rayon, surface, vecteurs_normaux, "surface")
+            point_interface = rayon.point_interface
 
-            rayon.point_interface = point_interface
-
-            i, j = indices_du_point(point_interface)
+            i, j = indices_du_point(rayon.point_interface)
             vecteur_normal = vecteurs_normaux[i, j]
 
             rayon.refract(vecteur_normal)
 
-            point_sol = find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol')
-            rayon.point_sol = point_sol
+            rayon.find_point_intersection(rayon, surface, vecteurs_normaux, "sol")
+            point_sol = rayon.point_sol
 
             point_source = rayon.point_source
             lum = rayon.lum_r
@@ -77,7 +76,7 @@ def calcul_trajectoires(rayons, surface, A, B, t):
 
 
 
-def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=0.001, l=0.01):
+def spectre_Phillips(kx, ky, V=np.array([1, 0]), A=0.001, l=0.01):
     """
     Calcule le spectre de vagues de Phillips.
 
@@ -120,7 +119,7 @@ def Ph_Phillips(kx, ky, V=np.array([1, 0]), A=0.001, l=0.01):
         return A*np.exp(-1/(L*k_norm)**2)/k_norm**4 * cos_facteur**2 * correction
 
 
-def random_h0(kx, ky, Ph, V):
+def random_h0(kx, ky, spectre, V):
     """
     Calcule une surface initiale aléatoire de vagues dans le domaine de Fourier.
 
@@ -130,7 +129,7 @@ def random_h0(kx, ky, Ph, V):
         Composante x du vecteur d'onde
     ky : float
         Composante y du vecteur d'onde
-    Ph : fonction
+    spectre : fonction
         Spectre utilisé
     V : array 2D
         Vitesse du vent
@@ -138,11 +137,11 @@ def random_h0(kx, ky, Ph, V):
     Returns
     -------
     float
-        Renvoie une valeur du spectre Ph en (kx, ky) avec un bruit gaussien
+        Renvoie une valeur du spectre en (kx, ky) avec un bruit gaussien
     """
     e_r = rd.gauss(0, 1)
     e_i = rd.gauss(0, 1)
-    return 1/np.sqrt(2) * (e_r + 1j*e_i) * np.sqrt(Ph(kx, ky))
+    return 1/np.sqrt(2) * (e_r + 1j*e_i) * np.sqrt(spectre(kx, ky))
 
 
 

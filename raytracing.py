@@ -258,7 +258,7 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, interface):
     return np.dot(vecteur_normal, vec(P, point_interface))
 
 
-def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'):
+def find_point_intersection(rayon, surface, vecteurs_normaux, interface):
     """
     Renvoie le point d'intersection du rayon avec l'interface.
     On fait une recherche de zéro de la fonction test_intersection (en fonction de s).
@@ -280,12 +280,12 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, intersection='sol'
         Coordonnées du point d'intersection
     """
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
-        rayon, surface, s, vecteurs_normaux, intersection), x0=0, x1=Lz)
+        rayon, surface, s, vecteurs_normaux, interface), x0=0, x1=Lz)
     s_intersection = recherche_zero.root
 
-    if intersection == "sol":
+    if interface == "sol":
         depart = "interface"
-    if intersection == "surface":
+    if interface == "surface":
         depart = "source"
     point_interface = rayon.point_rayon(depart, s_intersection)
 
@@ -321,6 +321,10 @@ class Rayon():
         self.vecteur_direction_r = refract(self.vecteur_direction_i, vecteur_normal)
         self.lum_r = self.lum * (1 - coeff_reflection(self.vecteur_direction_i, vecteur_normal))
     
-
+    def find_point_intersection(self, rayon, surface, vecteurs_normaux, interface):
+        if interface == "sol":
+            self.point_sol = find_point_intersection(rayon, surface, vecteurs_normaux, interface)
+        if interface == "surface":
+            self.point_interface = find_point_intersection(rayon, surface, vecteurs_normaux, interface)
     
 
