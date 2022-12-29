@@ -85,7 +85,7 @@ def calcul_motifs(rayons):
             i_S, j_S = indices_du_point(point_sol)
 
             if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
-                motif[i_S, j_S] += rayon.lum_r
+                motif[i_S, j_S] += rayon.lum_sol
 
     max_I = motif.max()
     # règle l'intensité de la lumière en fonction du nombre d'impacts de rayons

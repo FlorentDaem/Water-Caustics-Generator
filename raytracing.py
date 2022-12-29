@@ -305,6 +305,7 @@ class Rayon():
         self.lum_r = None
         
         self.point_sol = None
+        self.lum_sol = None
 
     def point_rayon(self, depart, s):
         if depart=="source":
@@ -322,6 +323,7 @@ class Rayon():
 
         if depart == "surface":
             self.point_sol = point_intersection
+            self.lum_sol = self.lum_r * np.exp(-c*np.linalg.norm(vec(self.point_interface, self.point_sol)))
         elif depart == "source":
             self.point_interface = point_intersection
     

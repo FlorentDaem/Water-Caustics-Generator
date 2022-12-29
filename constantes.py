@@ -15,6 +15,9 @@ g = 9.81
 # Constante capillaire
 kc = 500
 
+# Coefficient d'extinction
+c = 0.5
+
 # Discrétisation de l'espace
 Lx = 1
 Nx = 2**8
