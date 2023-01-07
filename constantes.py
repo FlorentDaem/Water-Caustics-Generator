@@ -20,7 +20,7 @@ c = 0.5
 
 # Discrétisation de l'espace
 Lx = 1
-Nx = 2**8
+Nx = 2**7
 dx = Lx/Nx
 
 Ly = Lx

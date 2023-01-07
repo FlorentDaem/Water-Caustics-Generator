@@ -68,7 +68,7 @@ def calcul_trajectoires(rayons, surface, A, B, t):
 
 
 
-def spectre_Phillips(kx, ky, V=np.array([1, 0]), A=0.001, l=0.01):
+def spectre_Phillips(kx, ky, V=np.array([10, 0]), A=0.001, l=0.01):
     """
     Calcule le spectre de vagues de Phillips.
 
