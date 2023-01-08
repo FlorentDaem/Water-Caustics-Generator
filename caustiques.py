@@ -2,6 +2,7 @@
 ## Imports
 
 from tqdm import tqdm
+import tempfile
 
 from raytracing import *
 from affichages import *
@@ -57,24 +58,27 @@ def genere_animation(surface, amplitude_fourier_plus, rayons, save_surface=True,
             amplitude_fourier_moins[i, j] = np.conjugate(
                 amplitude_fourier_plus[-i, -j])
 
-    for n in tqdm(range(frames), desc="frame"):
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        for n in tqdm(range(frames), desc="frame"):
+            if save_surface:
+                save_frame_surface(surface, n, tmpdirname)
+            if save_motif:
+                calcul_trajectoires(rayons, surface, n*dt,
+                                    amplitude_fourier_plus, amplitude_fourier_moins)
+                save_image(surface, rayons, n, tmpdirname)
+            update_surface(surface, n*dt, amplitude_fourier_plus,
+                        amplitude_fourier_moins)
+        
+        # Génération du gif
         if save_surface:
-            save_frame_surface(surface, n)
+            images = [Image.open(os.path.join(
+                tmpdirname, f"frame{n}.png")) for n in range(frames)]
+            images[0].save(f"gif/wave {Nx=}.gif", save_all=True,
+                        append_images=images[1:], duration=dt*10**3, loop=0)
         if save_motif:
-            calcul_trajectoires(rayons, surface, n*dt,
-                                amplitude_fourier_plus, amplitude_fourier_moins)
-            save_image(surface, rayons, n)
-        update_surface(surface, n*dt, amplitude_fourier_plus,
-                       amplitude_fourier_moins)
-    
-    if save_surface:
-        images = [Image.open(f"Frames/frame{n}.png") for n in range(frames)]
-        images[0].save(f"gif/wave {Nx=}.gif", save_all=True,
-                       append_images=images[1:], duration=dt*10**3, loop=0)
-    if save_motif:
-        images = [Image.open(f"Frames/frame{n} image.png")
-                  for n in range(frames)]
-        images[0].save(f"gif/caustiques dynamique {Nx=}.gif", save_all=True,
-                       append_images=images[1:], duration=dt*10**3, loop=0)
+            images = [Image.open(os.path.join(tmpdirname, f"frame{n} image.png"))
+                    for n in range(frames)]
+            images[0].save(f"gif/caustiques dynamique {Nx=}.gif", save_all=True,
+                        append_images=images[1:], duration=dt*10**3, loop=0)
 
 

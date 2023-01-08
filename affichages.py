@@ -1,6 +1,7 @@
 ## Imports
 
 import matplotlib.pyplot as plt
+import os
 
 from constantes import *
 
@@ -43,7 +44,9 @@ def affiche_rayons(rayons, surface, save=False):
     plt.xlim(-Lx/2*0, Lx/2*2)
     plt.ylim(0, Lz)
     if save:
-        plt.savefig("images/rayons.pdf")
+        nom_dossier = "images"
+        nom_fichier = "rayons.pdf"
+        plt.savefig(os.path.join(nom_dossier, nom_fichier))
 
 
 def plot_surface(surface, fact=1):
@@ -60,7 +63,7 @@ def plot_surface(surface, fact=1):
     plt.close(fig)
 
 
-def save_frame_surface(surface, n, fact=1):
+def save_frame_surface(surface, n, nom_dossier, fact=1):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.set_xlim(-Lx/2*0, Lx/2*2)
@@ -71,7 +74,9 @@ def save_frame_surface(surface, n, fact=1):
     ax.set_zlabel("Z")
     ax.plot_surface(grille_X, grille_Y, (surface-H)*fact + H, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
-    fig.savefig(f"frames/frame{n}.png")
+    # nom_dossier = "frames"
+    nom_fichier = f"frame{n}.png"
+    fig.savefig(os.path.join(nom_dossier, nom_fichier))
     plt.close(fig)
 
 
@@ -100,12 +105,12 @@ def motif_to_alpha(motif):
     Parameters
     ----------
     motif : array 2D
-        Grille de valeurs de luminosité
+        Grille de valeurs de luminosité.
 
     Returns
     -------
     array 2D
-        Image avec valeurs de alpha
+        Image avec valeurs de alpha.
     """
     image = np.zeros((Nx, Ny, 4))
     for i in range(Nx):
@@ -116,10 +121,12 @@ def motif_to_alpha(motif):
     return image
 
 
-def save_image(surface, rayons, n):
+def save_image(surface, rayons, n, nom_dossier):
     motif = calcul_motifs(rayons)
 
     image = motif_to_alpha(motif)
-    plt.imsave(f"frames/frame {n} image.png", image)
+    # nom_dossier = "frames"
+    nom_fichier = f"frame{n} image.png"
+    plt.imsave(os.path.join(nom_dossier, nom_fichier), image)
     plt.close()
 
