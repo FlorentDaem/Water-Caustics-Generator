@@ -112,7 +112,7 @@ def omega(kx, ky):
 OMEGA = np.zeros((Nx, Ny))
 for i in range(Nx):
     for j in range(Ny):
-        OMEGA[i, j] = omega(vals_x[i], vals_y[j])
+        OMEGA[i, j] = omega(vals_kx[i], vals_ky[j])
 
 
 ## Calcul de la surface d'eau
@@ -135,8 +135,8 @@ def surface_fourier(t, amplitude_fourier_plus, amplitude_fourier_moins):
     array
         Surface dans l'espace de Fourier.
     """
-    onde_plus = amplitude_fourier_moins[:, :]*np.exp(1j*(+ OMEGA[:, :]*t))
-    onde_moins = amplitude_fourier_plus[:, :]*np.exp(1j*(- OMEGA[:, :]*t))
+    onde_plus = amplitude_fourier_plus[:, :]*np.exp(1j*(+ OMEGA[:, :]*t))
+    onde_moins = amplitude_fourier_moins[:, :]*np.exp(1j*(- OMEGA[:, :]*t))
     return  (onde_moins + onde_plus)
 
 def update_surface(surface, t, amplitude_fourier_plus, amplitude_fourier_moins):

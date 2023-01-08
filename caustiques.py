@@ -45,8 +45,8 @@ def calcul_trajectoires(rayons, surface, t, amplitude_fourier_plus, amplitude_fo
 
 ## Animation
 
-frames = 10
-dt = 1/10
+frames = 25
+dt = 1/20
 
 
 def genere_animation(surface, amplitude_fourier_plus, rayons, save_surface=True, save_motif=False):
