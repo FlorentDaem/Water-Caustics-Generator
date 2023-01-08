@@ -34,9 +34,9 @@ def calcul_trajectoires(rayons, surface, t, amplitude_fourier_plus, amplitude_fo
     t : float
         Temps.
     amplitude_fourier_plus : array
-        Coefficients de Fourier.
+        Amplitude de Fourier selon +omega.
     amplitude_fourier_moins : array
-        Coefficients de Fourier.
+        Amplitude de Fourier selon -omega.
     """
     vecteurs_normaux = vecteurs_normaux_surface(surface)
     for i in tqdm(range(Nx-1), desc="Calcul des trajectoires "):
@@ -68,16 +68,16 @@ def spectre_Phillips(kx, ky, V=np.array([10, 0]), A=0.001, l=0.01):
     ky : float
         Composante y du vecteur d'onde.
     V : array 2D, optional
-        Vecteur vitesse du vent, by default np.array([10, 0])
+        Vecteur vitesse du vent, by default np.array([10, 0]).
     A : float, optional
-        Amplitude du spectre, by default 0.001
+        Amplitude du spectre, by default 0.001.
     l : float, optional
         Distance caractéristique d'aténuation, by default 0.01.
 
     Returns
     -------
     float
-        Renvoie la valeur du spectre de vagues de Phillips en (kx, ky).
+        Valeur du spectre de vagues de Phillips en (kx, ky).
     """
 
     k = np.array([kx, ky])
@@ -167,9 +167,9 @@ def surface_fourier(t, amplitude_fourier_plus, amplitude_fourier_moins):
     t : float
         Temps.
     amplitude_fourier_plus : array
-        Coefficients de Fourier.
+        Amplitude de Fourier selon +omega.
     amplitude_fourier_moins : array
-        Coefficients de Fourier.
+        Amplitude de Fourier selon -omega.
 
     Returns
     -------
@@ -191,11 +191,12 @@ def update_surface(surface, t, amplitude_fourier_plus, amplitude_fourier_moins):
     t : float
         Temps.
     amplitude_fourier_plus : array
-        Coefficients de Fourier.
+        Amplitude de Fourier selon +omega.
     amplitude_fourier_moins : array
-        Coefficients de Fourier.
+        Amplitude de Fourier selon -omega.
     """
-    surface[:, :] = H + facteur_shift[:,:] *np.real(np.fft.ifft2(surface_fourier(t, amplitude_fourier_plus, amplitude_fourier_moins)[:, :], norm="forward"))
+    surface_dans_fourier = surface_fourier(t, amplitude_fourier_plus, amplitude_fourier_moins)[:, :]
+    surface[:, :] = H + facteur_shift[:,:] *np.real(np.fft.ifft2(surface_dans_fourier, norm="forward"))
 
 
 
