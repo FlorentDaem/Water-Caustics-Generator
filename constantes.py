@@ -35,8 +35,8 @@ dkx = 2*np.pi/Lx
 dky = 2*np.pi/Ly
 
 
-vecteurs_kx = np.array([(i-Nx/2)*dkx for i in range(Nx)])
-vecteurs_ky = np.array([(j-Ny/2)*dky for j in range(Ny)])
+vals_kx = np.array([(i-Nx/2)*dkx for i in range(Nx)])
+vals_ky = np.array([(j-Ny/2)*dky for j in range(Ny)])
 
 
 # Profondeur d'eau
