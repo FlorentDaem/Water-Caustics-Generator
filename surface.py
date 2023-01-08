@@ -71,7 +71,7 @@ def random_amplitude_fourier_plus(kx, ky, spectre, V):
         Composante y du vecteur d'onde.
     spectre : fonction
         Spectre utilisé.
-    V : array 2D
+    V : array
         Vitesse du vent.
 
     Returns

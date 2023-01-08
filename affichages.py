@@ -148,12 +148,12 @@ def motif_to_alpha(motif):
 
     Parameters
     ----------
-    motif : array 2D
+    motif : array
         Grille de valeurs de luminosité.
 
     Returns
     -------
-    array 2D
+    array
         Image avec valeurs de alpha.
     """
     image = np.zeros((Nx, Ny, 4))
