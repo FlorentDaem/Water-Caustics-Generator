@@ -66,3 +66,15 @@ def genere_animation(surface, amplitude_fourier_plus, rayons, save_surface=True,
             save_image(surface, rayons, n)
         update_surface(surface, n*dt, amplitude_fourier_plus,
                        amplitude_fourier_moins)
+    
+    if save_surface:
+        images = [Image.open(f"Frames/frame{n}.png") for n in range(frames)]
+        images[0].save(f"gif/wave Nx={Nx}.gif", save_all=True,
+                       append_images=images[1:], duration=dt*10**3, loop=0)
+    if save_motif:
+        images = [Image.open(f"Frames/frame {n} image.png")
+                  for n in range(frames)]
+        images[0].save(f"gif/caustiques dynamique Nx={Nx}.gif", save_all=True,
+                       append_images=images[1:], duration=dt*10**3, loop=0)
+
+

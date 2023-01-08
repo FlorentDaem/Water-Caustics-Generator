@@ -296,6 +296,18 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, depart):
 
 class Rayon():
     def __init__(self, point_source, vecteur_direction_i, lum):
+        """
+        Génère un objet rayon lumineux.
+
+        Parameters
+        ----------
+        point_source : array
+            Point d'où part le rayon.
+        vecteur_direction_i : array
+            Direction du rayon incident.
+        lum : float
+            Intensité lumineuse.
+        """
         self.point_source = point_source
         self.vecteur_direction_i = vecteur_direction_i
         self.lum = lum
