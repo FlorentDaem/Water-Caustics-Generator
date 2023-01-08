@@ -51,7 +51,24 @@ dt = 1/20
 
 
 def genere_animation(surface, amplitude_fourier_plus, rayons, save_surface=True, save_motif=False):
+    """
+    Génère des gif animés.
 
+    Parameters
+    ----------
+    surface : array
+        Surface d'eau.
+    amplitude_fourier_plus : array
+        Amplitude de Fourier selon +omega.
+    rayons : list
+        Liste d'objets rayon.
+    save_surface : bool, optional
+        Enregistre un gif de la surface d'eau si save_surface, by default True
+    save_motif : bool, optional
+        Enregistre un gif du motif si save_motif, by default False
+    """
+
+    # Calcul de l'autre amplitude
     amplitude_fourier_moins = np.zeros((Nx, Ny), dtype=complex)
     for i in range(Nx):
         for j in range(Ny):
@@ -59,6 +76,8 @@ def genere_animation(surface, amplitude_fourier_plus, rayons, save_surface=True,
                 amplitude_fourier_plus[-i, -j])
 
     with tempfile.TemporaryDirectory() as tmpdirname:
+
+        # Enregistrement des frames
         for n in tqdm(range(frames), desc="frame"):
             if save_surface:
                 save_frame_surface(surface, n, tmpdirname)
@@ -69,7 +88,7 @@ def genere_animation(surface, amplitude_fourier_plus, rayons, save_surface=True,
             update_surface(surface, n*dt, amplitude_fourier_plus,
                         amplitude_fourier_moins)
         
-        # Génération du gif
+        # Enregistrement du gif
         if save_surface:
             images = [Image.open(os.path.join(
                 tmpdirname, f"frame{n}.png")) for n in range(frames)]

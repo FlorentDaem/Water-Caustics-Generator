@@ -14,15 +14,15 @@ def vec(A, B):
 
     Parameters
     ----------
-    A : Array numpy
-        Coordonnées du point A
-    B : Array numpy
-        Coordonnées du point B
+    A : array
+        Coordonnées du point A.
+    B : array
+        Coordonnées du point B.
 
     Returns
     -------
-    Array numpy
-        Vecteur AB
+    array
+        Vecteur AB.
     """
     return B-A
 
@@ -33,15 +33,15 @@ def projection(v, n):
 
     Parameters
     ----------
-    v : Array numpy
-        Coordonnées du vecteur à projeter
-    n : Array numpy
-        Coordonnées du vecteur sur lequel on veut projeter
+    v : array
+        Coordonnées du vecteur à projeter.
+    n : array
+        Coordonnées du vecteur sur lequel on veut projeter.
 
     Returns
     -------
-    Array numpy
-        Coordonnées du vecteur projection de v sur n
+    array
+        Coordonnées du vecteur projection de v sur n.
     """
     return np.dot(v, n) * n
 
@@ -52,15 +52,15 @@ def symetrie(v, n):
 
     Parameters
     ----------
-    v : Array numpy
-        Coordonnées du vecteur initial
-    n : Array numpy
-        Coordonnées du vecteur définissant l'axe
+    v : array
+        Coordonnées du vecteur initial.
+    n : array
+        Coordonnées du vecteur définissant l'axe.
 
     Returns
     -------
-    Array numpy
-        Coordonnées du vecteur symétrique
+    array
+        Coordonnées du vecteur symétrique.
     """
     return 2*projection(v, n) - v
 
@@ -71,15 +71,15 @@ def reflect(v, n):
 
     Parameters
     ----------
-    v : Array numpy
-        Coordonnées du rayon initial
-    n : Array numpy
-        Coordonnées du vecteur normal
+    v : array
+        Coordonnées du rayon initial.
+    n : array
+        Coordonnées du vecteur normal.
 
     Returns
     -------
-    Array numpy
-        Coordonnées du rayon réfléchi
+    array
+        Coordonnées du rayon réfléchi.
     """
     return -symetrie(v, n)
 
@@ -91,12 +91,12 @@ def cos_theta_refract(cos_theta_i):
     Parameters
     ----------
     cos_theta_i : float
-        Angle d'incidence
+        Angle d'incidence.
 
     Returns
     -------
     float
-        Angle de réfraction
+        Angle de réfraction.
     """
     return np.sqrt(1-(n1/n2)**2 * (1-cos_theta_i**2))
 
@@ -107,15 +107,15 @@ def refract(vecteur_direction_i, vecteur_normal):
 
     Parameters
     ----------
-    vecteur_direction_i : Array numpy
-        Coordonnées du rayon initial
-    vecteur_normal : Array numpy
-        Coordonnées du vecteur normal
+    vecteur_direction_i : array
+        Coordonnées du rayon initial.
+    vecteur_normal : array
+        Coordonnées du vecteur normal.
 
     Returns
     -------
-    Array numpy
-        Coordonnées du rayon réfracté
+    array
+        Coordonnées du rayon réfracté.
     """
     cos_theta_i = -np.dot(vecteur_direction_i, vecteur_normal)
     rr = n1/n2*vecteur_direction_i + (n1/n2*cos_theta_i - cos_theta_refract(cos_theta_i))*vecteur_normal
@@ -129,15 +129,15 @@ def point_rayon(rayon, s):
 
     Parameters
     ----------
-    rayon : Array
-        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
+    rayon : array
+        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum.
     s : float
-        Distance
+        Distance.
 
     Returns
     -------
-    Array numpy
-        Coordonnées du point d'arrivée
+    array
+        Coordonnées du point d'arrivée.
     """
     P, vec, lum = rayon
     return P + s*vec
@@ -145,17 +145,17 @@ def point_rayon(rayon, s):
 
 def indices_du_point(P):
     """
-    Renvoie les indices du pixel qui correspond au point P
+    Renvoie les indices du pixel qui correspond au point P.
 
     Parameters
     ----------
-    P : Array numpy
-        Coordonnées du point P
+    P : array
+        Coordonnées du point P.
 
     Returns
     -------
     (int, int)
-        Indices i et j tels que (i*dx, j*dy) = P
+        Indices i et j tels que (i*dx, j*dy) = P.
     """
     i = int(np.dot(P, np.array([1, 0, 0]))/dx)
     j = int(np.dot(P, np.array([0, 1, 0]))/dy)
@@ -168,15 +168,15 @@ def coeff_reflection(vecteur_direction_i, vecteur_normal):
 
     Parameters
     ----------
-    vecteur_direction_i : Array numpy
-        Coordonnées du rayon incident
-    vecteur_normal : Array numpy
-        Coordonnées du vecteur normal
+    vecteur_direction_i : array
+        Coordonnées du rayon incident.
+    vecteur_normal : array
+        Coordonnées du vecteur normal.
 
     Returns
     -------
     float
-        Coefficient de réflection
+        Coefficient de réflection.
     """
     theta_i = np.arccos(-np.dot(vecteur_direction_i, vecteur_normal))
     theta_r = np.arcsin(n1/n2*np.sin(theta_i))
@@ -203,13 +203,13 @@ def vecteurs_normaux_surface(surface):
 
     Parameters
     ----------
-    surface : Array (2D)
-        Hauteur de la surface aux points (i,j)
+    surface : array
+        Hauteur de la surface aux points (i,j).
 
     Returns
     -------
-    Array (2D)
-        Tableau des vecteurs normaux à la surface aux points (i,j)
+    array
+        Tableau des vecteurs normaux à la surface aux points (i,j).
     """
     vecteurs_normaux = []
     for i in range(Nx-1):
@@ -226,16 +226,16 @@ def test_intersection(rayon, surface, s, vecteurs_normaux, depart):
 
     Parameters
     ----------
-    rayon : Array
-        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
-    surface : Array (2D)
-        Hauteur de la surface aux points (i,j)
+    rayon : array
+        Objet rayon lumineux.
+    surface : array
+        Hauteur de la surface aux points (i,j).
     s : float
-        Distance
-    vecteurs_normaux : Array (2D)
-        Tableau des vecteurs normaux à la surface aux points (i,j)
+        Distance.
+    vecteurs_normaux : array
+        Tableau des vecteurs normaux à la surface aux points (i,j).
     interface : str
-        Nom de l'interface
+        Nom de l'interface.
 
     Returns
     -------
@@ -264,19 +264,19 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, depart):
 
     Parameters
     ----------
-    rayon : Array
-        Rayon lumineux [P, vec, lum] partant de P, dirigé selon vec et de luminosité lum
-    surface : Array (2D)
-        Hauteur de la surface aux points (i,j)
-    vecteurs_normaux : Array (2D)
-        Tableau des vecteurs normaux à la surface aux points (i,j)
+    rayon : array
+        Objet rayon lumineux.
+    surface : array
+        Hauteur de la surface aux points (i,j).
+    vecteurs_normaux : array
+        Tableau des vecteurs normaux à la surface aux points (i,j).
     interface : str
-        Nom de l'interface
+        Nom de l'interface.
 
     Returns
     -------
-    Array
-        Coordonnées du point d'intersection
+    array
+        Coordonnées du point d'intersection.
     """
     recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
         rayon, surface, s, vecteurs_normaux, depart), x0=0, x1=Lz)
