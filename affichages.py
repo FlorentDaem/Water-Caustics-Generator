@@ -54,6 +54,8 @@ def affiche_rayons(rayons, surface, save=False):
 
     plt.xlim(0, Lx)
     plt.ylim(0, Lz)
+    plt.xlabel(r"x")
+    plt.ylabel(r"z")
     if save:
         nom_dossier = "images"
         nom_fichier = "rayons.pdf"
