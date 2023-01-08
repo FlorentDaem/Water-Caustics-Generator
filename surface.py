@@ -175,24 +175,55 @@ for i in range(Nx):
 ## Calcul de la surface d'eau
 
 def surface_fourier(A, B, t):
+    """
+    Génère les composantes de Fourier de la surface.
+
+    Parameters
+    ----------
+    A : array
+        Coefficients de Fourier.
+    B : array
+        Coefficients de Fourier.
+    t : float
+        Temps.
+
+    Returns
+    -------
+    array
+        Surface dans l'espace de Fourier.
+    """
     onde_plus = B[:, :]*np.exp(1j*(+ OMEGA[:, :]*t))
     onde_moins = A[:, :]*np.exp(1j*(- OMEGA[:, :]*t))
     return  (onde_moins + onde_plus)
 
-def genere_surface(surface, t, A, B):
-    surface[:, :] = H + fact_1[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :], norm="forward"))
+def update_surface(surface, t, A, B):
+    """
+    Génère la surface à l'instant t connaissant A et B.
+
+    Parameters
+    ----------
+    surface : float
+        Surface à l'instant précédent.
+    t : float
+        Temps
+    A : array
+        Coefficients de Fourier.
+    B : array
+        Coefficients de Fourier.
+    """
+    surface[:, :] = H + facteur_shift[:,:] *np.real(np.fft.ifft2(surface_fourier(A, B, t)[:, :], norm="forward"))
 
 
 
 ## Animation
 
-frames = 25
-dt = 1/20
+frames = 10
+dt = 1/10
 
 
 
 
-def genere_animation_simple(surface, h0, rayons, save_surface=True, save_motif=False):
+def genere_animation(surface, h0, rayons, save_surface=True, save_motif=False):
 
     A = np.zeros((Nx, Ny), dtype=complex)
     B = np.zeros((Nx, Ny), dtype=complex)
@@ -209,4 +240,4 @@ def genere_animation_simple(surface, h0, rayons, save_surface=True, save_motif=F
         if save_motif:
             calcul_trajectoires(rayons, surface, A, B, n*dt)
             save_image(surface, rayons, n)
-        genere_surface(surface, n*dt, A, B)
+        update_surface(surface, n*dt, A, B)

@@ -53,7 +53,7 @@ grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
 
 
 # Facteur nécessaire pour changer de variables pour la FFT
-fact_1 = np.ones((Nx, Ny))
+facteur_shift = np.ones((Nx, Ny))
 for i in range(Nx):
     for j in range(Ny):
-        fact_1[i, j] = (-1)**(i+j)
+        facteur_shift[i, j] = (-1)**(i+j)
