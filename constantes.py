@@ -48,7 +48,7 @@ else:
     Lz = 2*H
 
 # Vitesse du vent
-V = np.array([1,0]) * 10
+V = np.array([1,0]) * 1
 
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')

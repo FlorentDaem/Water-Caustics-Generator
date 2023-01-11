@@ -46,7 +46,7 @@ def calcul_trajectoires(rayons, surface, t, amplitude_fourier_plus, amplitude_fo
 
 ## Animation
 
-frames = 40
+frames = 20
 dt = 1/20
 
 
