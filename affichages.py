@@ -81,7 +81,6 @@ def plot_surface(surface):
     ax.set_zlabel("Z")
     ax.plot_surface(grille_X, grille_Y, surface, cmap="Blues",
                     linewidth=0, antialiased=False, alpha=0.9)
-    plt.close(fig)
 
 
 def save_frame_surface(surface, n, nom_dossier):
@@ -101,7 +100,7 @@ def save_frame_surface(surface, n, nom_dossier):
     ax = fig.add_subplot(111, projection="3d")
     ax.set_xlim(0, Lx)
     ax.set_ylim(0, Ly)
-    ax.set_zlim(0, Lz)
+    ax.set_zlim(H-Lx/2, H+Lx/2)
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
