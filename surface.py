@@ -16,7 +16,7 @@ from constantes import *
 
 
 
-def spectre_Phillips(kx, ky, V=np.array([10, 0]), A=0.001, l=0.01):
+def spectre_Phillips(kx, ky, V=np.array([10, 0]), A=0.001/Lx/Ly, l=Lx*10**-2):
     """
     Calcule le spectre de vagues de Phillips.
 
@@ -59,7 +59,7 @@ def spectre_Phillips(kx, ky, V=np.array([10, 0]), A=0.001, l=0.01):
         return A*np.exp(-1/(L*k_norm)**2)/k_norm**4 * facteur_direction**2 * correction
 
 
-def random_amplitude_fourier_plus(kx, ky, spectre, V):
+def random_amplitude_fourier_plus(kx, ky, spectre):
     """
     Calcule une surface initiale aléatoire de vagues dans le domaine de Fourier.
 
@@ -71,8 +71,6 @@ def random_amplitude_fourier_plus(kx, ky, spectre, V):
         Composante y du vecteur d'onde.
     spectre : fonction
         Spectre utilisé.
-    V : array
-        Vitesse du vent.
 
     Returns
     -------
@@ -81,7 +79,7 @@ def random_amplitude_fourier_plus(kx, ky, spectre, V):
     """
     e_r = rd.gauss(0, 1)
     e_i = rd.gauss(0, 1)
-    return 1/np.sqrt(2) * (e_r + 1j*e_i) * np.sqrt(spectre(kx, ky))
+    return 1/np.sqrt(2) * (e_r + 1j*e_i) * np.sqrt(spectre(kx, ky, V))
 
 
 

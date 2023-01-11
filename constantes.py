@@ -20,7 +20,7 @@ c = 0.5
 
 # Discrétisation de l'espace
 Lx = 1
-Nx = 2**7
+Nx = 2**8
 dx = Lx/Nx
 
 Ly = Lx
@@ -47,6 +47,8 @@ if H < Lx:
 else:
     Lz = 2*H
 
+# Vitesse du vent
+V = np.array([1,0]) * 10
 
 # Définition d'un meshgrid
 grille_X, grille_Y = np.meshgrid(vals_x, vals_y, indexing='ij')
