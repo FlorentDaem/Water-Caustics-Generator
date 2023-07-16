@@ -278,9 +278,13 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, depart):
     array
         Coordonnées du point d'intersection.
     """
-    recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
-        rayon, surface, s, vecteurs_normaux, depart), x0=0, x1=Lz)
-    s_intersection = recherche_zero.root
+    if depart == "source":
+        recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
+            rayon, surface, s, vecteurs_normaux, depart), x0=0, x1=Lz)
+        s_intersection = recherche_zero.root
+
+    else:
+        s_intersection = -rayon.point_interface[2]/rayon.vecteur_direction_r[2]
 
     point_intersection = rayon.point_rayon(depart, s_intersection)
 
@@ -323,7 +327,7 @@ class Rayon():
         if depart=="source":
             return self.point_source + s*self.vecteur_direction_i
         elif depart=="surface":
-            return self.point_source + s*self.vecteur_direction_r
+            return self.point_interface + s*self.vecteur_direction_r
     
     def refract(self, vecteur_normal):
         self.vecteur_direction_r = refract(self.vecteur_direction_i, vecteur_normal)
