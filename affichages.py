@@ -25,6 +25,25 @@ def indices_du_point(P):
     return (i, j)
 
 
+def indices_du_point_sol(P):
+    """
+    Renvoie les indices du pixel qui correspond au point P.
+
+    Parameters
+    ----------
+    P : array
+        Coordonnées du point P.
+
+    Returns
+    -------
+    (int, int)
+        Indices i et j tels que (i*dx, j*dy) = P.
+    """
+    i = int(np.dot(P, np.array([1, 0, 0]))/dx_sol)
+    j = int(np.dot(P, np.array([0, 1, 0]))/dy_sol)
+    return (i, j)
+
+
 def affiche_rayons(rayons, surface, save=False):
     """
     Dessine les rayons et l'eau dans le plan y=0.
@@ -125,16 +144,16 @@ def calcul_motifs(rayons):
     array
         Image du motif.
     """
-    motif = np.zeros((Nx, Ny))
+    motif = np.zeros((Nx_sol, Ny_sol))
 
     for i in range(Nx-1):
         for j in range(Ny-1):
             rayon = rayons[i][j]
             point_sol = rayon.point_sol
-            i_S, j_S = indices_du_point(point_sol)
+            i_S, j_S = indices_du_point_sol(point_sol)
 
             # Ajoute de la luminosité à chaque pixel dans l'intervalle considéré
-            if (0 <= i_S and i_S < Nx-1) and (0 <= j_S and j_S < Ny-1):
+            if (0 <= i_S and i_S < Nx_sol-1) and (0 <= j_S and j_S < Ny_sol-1):
                 motif[i_S, j_S] += rayon.lum_sol
 
     max_I = motif.max()
