@@ -279,11 +279,15 @@ def find_point_intersection(rayon, surface, vecteurs_normaux, depart):
         Coordonnées du point d'intersection.
     """
     if depart == "source":
-        recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
-            rayon, surface, s, vecteurs_normaux, depart), x0=0, x1=Lz)
-        s_intersection = recherche_zero.root
+        if shift_rayons :
+            recherche_zero = scipy.optimize.root_scalar(lambda s: test_intersection(
+                rayon, surface, s, vecteurs_normaux, depart), x0=0, x1=Lz)
+            s_intersection = recherche_zero.root
+        else:
+            nx, ny = indices_du_point(rayon.point_source)
+            s_intersection = rayon.point_source[2] - surface[nx,ny]
 
-    else:
+    elif depart == "surface":
         s_intersection = -rayon.point_interface[2]/rayon.vecteur_direction_r[2]
 
     point_intersection = rayon.point_rayon(depart, s_intersection)

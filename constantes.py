@@ -20,7 +20,7 @@ c = 0.5
 
 # Discrétisation de l'espace
 Lx = 1
-Nx = 2**9
+Nx = 2**10
 dx = Lx/Nx
 
 Ly = Lx
@@ -29,6 +29,17 @@ dy = Ly/Ny
 
 vals_x = np.array([i*dx for i in range(Nx)])
 vals_y = np.array([j*dy for j in range(Ny)])
+
+# Décalage des rayons par rapport à la grille
+
+shift_rayons = False
+
+if shift_rayons :
+    di_rayon = 1/2
+    dj_rayon = 1/2
+else :
+    di_rayon = 0
+    dj_rayon = 0
 
 # Discrétisation de l'espace dans le domaine de Fourier
 dkx = 2*np.pi/Lx
