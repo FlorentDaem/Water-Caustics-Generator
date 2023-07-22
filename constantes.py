@@ -20,7 +20,7 @@ c = 0.5
 
 # Discrétisation de l'espace
 Lx = 1
-Nx = 2**8
+Nx = 2**9
 dx = Lx/Nx
 
 Ly = Lx
@@ -30,7 +30,7 @@ dy = Ly/Ny
 vals_x = np.array([i*dx for i in range(Nx)])
 vals_y = np.array([j*dy for j in range(Ny)])
 
-Nx_sol = Nx*2**2
+Nx_sol = Nx
 dx_sol = Lx/Nx_sol
 
 Ny_sol = Nx_sol
